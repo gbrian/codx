@@ -62,7 +62,7 @@
           </div>
           <div class="hidden md:block mt-2">
             <Dropdown
-              menuItemClass="-left-2 -mt-1"
+              menuItemClass="top-8"
               imgClass="w-6 transform rotate-90"
             />
           </div>
@@ -78,7 +78,7 @@
           />
           <div class="hidden md:block mt-2">
             <Dropdown
-              menuItemClass="-left-2 -mt-1"
+              menuItemClass="top-8"
               imgClass="w-5 transform rotate-90"
             />
           </div>
