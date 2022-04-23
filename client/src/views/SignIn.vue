@@ -43,6 +43,7 @@
               type="email"
               class="block w-full md:px-4 px-3 md:py-3 py-2.5 placeholder-gray-200 focus:outline-none sm:text-base text-sm border-gray-300 bg-transparent font-medium"
               placeholder="example@gmail.com"
+              v-on:keyup.enter="submit"
             />
           </div>
           <span
@@ -75,6 +76,7 @@
               v-model="password"
               type="password"
               class="block w-full md:px-4 px-3 md:py-3 py-2.5 placeholder-gray-200 focus:outline-none sm:text-base text-sm border-gray-300 bg-transparent font-medium"
+              v-on:keyup.enter="submit"
               placeholder="Enter your password"
             />
           </div>

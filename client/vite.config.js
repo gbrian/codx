@@ -9,7 +9,7 @@ export default defineConfig({
     host: true,
     port: 8080,
     hmr: {
-      port: process.env.CODX_WEB_PORT || 443,
+      port: process.env.CODX_WEB_PORT,
     }
   },
   plugins: [vue()],
