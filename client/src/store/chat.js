@@ -147,6 +147,10 @@ export const actions = actionTree(
     },
     formatMessage(ctx, newMessage) {
       return newMessage.content
+    },
+    async updateChat (ctx, { id, changes }) {
+      const chat = await api.updateChat(id, changes)
+      $storex.chat.addChat(chat)
     }
   },
 )

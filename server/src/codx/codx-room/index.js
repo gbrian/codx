@@ -5,7 +5,7 @@ const uuid = require('uuid').v4;
 module.exports = strapi => {
   const domain = process.env.WEB_DOMAIN
   return {
-    createTraefikConfigurationService ({ prefix, serviceUrl, isRemote }) {
+    createTraefikConfigurationService ({ prefix, serviceUrl, isRemote, host, protocol }) {
       const pathPrefix = `/${prefix}`
       const middlewares = {
         [`codx-room-${prefix}rdr`]: {
@@ -46,11 +46,11 @@ module.exports = strapi => {
       const routers = {
         [`codx-room-${prefix}`]: {
           entryPoints: [
-            "websecure"
+            protocol === 'https' ? "websecure": "web"
           ],
           middlewares: middlewaresIds,
           service: `codx-room-${prefix}`,
-          rule: `PathPrefix(\`${pathPrefix}\`) && Host(\`${domain}\`)`,
+          rule: `PathPrefix(\`${pathPrefix}\`) && Host(\`${host || domain}\`)`,
           tls: {
             "certResolver": process.env.PROXY_TLS_RESOLVER || "myresolver"
           }
@@ -62,12 +62,12 @@ module.exports = strapi => {
         routers
       }
     },
-    createTraefikConfiguration ({ prefix, ip, roomsUrl, serviceUrl: remoteServiceUrl }) {
+    createTraefikConfiguration ({ host, protocol, prefix, ip, roomsUrl, serviceUrl: remoteServiceUrl }) {
       const isRemote = roomsUrl.indexOf(domain) === -1
       const serviceUrl = isRemote ? remoteServiceUrl : `http://${ip}:${8080}`
-      const neko = this.createTraefikConfigurationService({ prefix, serviceUrl, roomsUrl, isRemote })
-      const openPorts = [['mysite', 3000], ['coder', 9080]]
-        .map(([serviceName, port]) => this.createTraefikConfigurationService({ prefix: prefix + '-' + serviceName, serviceUrl:`http://${ip}:${port}`, roomsUrl }))
+      const neko = this.createTraefikConfigurationService({ host, protocol, prefix, serviceUrl, roomsUrl, isRemote })
+      const openPorts = [['mysite', 3000, true], ['coder', 9080, false]]
+        .map(([serviceName, port, isRemote]) => this.createTraefikConfigurationService({ isRemote, host, protocol, prefix: prefix + '-' + serviceName, serviceUrl:`http://${ip}:${port}`, roomsUrl }))
       return openPorts.reduce((http, { middlewares, services, routers }) => {
          return {
           middlewares: {
@@ -276,11 +276,12 @@ module.exports = strapi => {
         provider
       }
     },
-    async roomProxies (proxyToken) {
-      const nekoRooms = await strapi.$query('neko-room').findMany({ populate: { user: true, cloud_provider: true }})
+    async roomProxies ({ token, host, protocol }) {
+      const nekoRooms = (await strapi.$query('neko-room').findMany({ populate: { user: true, cloud_provider: true }}))
+              .filter(({ room: { proxy: { roomsUrl } }}) => !host || roomsUrl.indexOf(host) !== -1)
       const res = nekoRooms
-        .map(({ room: { proxy: { prefix, roomsUrl, serviceUrl }, neko: { id } } }) =>
-          this.createTraefikConfiguration({ prefix, ip: id.substring(0, 12), roomsUrl, serviceUrl })
+        .map(({ room: { proxy: { prefix, roomsUrl, serviceUrl, ip }, neko: { id } } }) =>
+          this.createTraefikConfiguration({ host, protocol, prefix, ip: ip || id.substring(0, 12), roomsUrl, serviceUrl })
         )
       return res
     }

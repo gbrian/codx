@@ -130,7 +130,7 @@ services:
       - "--accesslog=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=${NEKO_ROOMS_TRAEFIK_NETWORK}"
-      - "--providers.http.endpoint=https://$API_DOMAIN/api/neko-rooms/proxy?token=$API_TOKEN"
+      - "--providers.http.endpoint=https://api-codx.meetnav.com/api/neko-rooms/proxy?token=$API_TOKEN"
       - "--providers.http.pollInterval=15s"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"

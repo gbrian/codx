@@ -5,7 +5,7 @@
         <span class="label-text" v-if="editing">Editing, press Esc. to cancel</span>
       </label>
       <input type="text" :placeholder="placeholder || 'Type messages'"
-        :class="['input block w-full md:px-4 px-3 md:py-3 py-2 focus:outline-none sm:text-base text-sm border-gray-300 rounded',
+        :class="['input block w-full md:px-4 px-3 md:py-3 py-2 focus:outline-none text-primary text-sm border-gray-300 rounded',
           editing ? 'border-error' : '']"
         v-model="message"
         @keydown.enter="$emit('send-message', message)"

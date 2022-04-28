@@ -42,8 +42,11 @@ module.exports = createCoreController('api::chat.chat', ({ strapi }) => ({
   },
   async update (ctx) {
     const { id } = ctx.params
-    const { request: { body: { guest, admin } }} = ctx
+    const { state: { user }, request: { body: { guest, admin, name } }} = ctx
     const { guests = [], admins } = await strapi.$api('chat').findOne(id, { populate: { admins: true, guests: true } })
+    if (!admins.filter(a => a.id === user.id)[0]) {
+      throw new Error("Not allowed")
+    }
     const data = {}
     if (guest) {
       data.guests = [...guests, guest]
@@ -52,6 +55,9 @@ module.exports = createCoreController('api::chat.chat', ({ strapi }) => ({
     if (admin) {
       data.admins = [...admins, admin]
       strapi.$api('network').update({ data: { user: admin, friends: data.guests.concat(data.admins) }})
+    }
+    if (name) {
+      data.name = name
     }
     return await strapi.$api('chat').update(id, { data })
   },

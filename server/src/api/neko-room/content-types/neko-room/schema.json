@@ -44,6 +44,9 @@
     },
     "deleted": {
       "type": "boolean"
+    },
+    "openPorts": {
+      "type": "json"
     }
   }
 }

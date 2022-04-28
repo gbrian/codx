@@ -35,8 +35,10 @@ export default {
     },
     onlineUsers () {
       const { userLayer } = this.$refs
+      const chatId = $storex.clinic.currentClinic?.chat.id
       return this.users
-              .filter(u => !!u.clinic?.cursorPosition)
+              .filter(u => !!u.clinic?.cursorPosition &&
+                u.clinic?.currentClinicChatId === chatId)
               .map(u => {
                 if (userLayer) {
                   const { clinic: { cursorPosition: { px, py } } } = u

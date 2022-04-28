@@ -1,5 +1,5 @@
 <template>
-  <div class="neko-room w-full h-full relative p-2">
+  <div class="neko-room w-full h-full relative">
     <iframe :class="['w-full h-full', loading ? 'opacity-0' : '']"
       :src="pageReady ? `${url}&ts=${ts}` : ''" frameborder="0" ref="nekoFrame" @load="onLoad()" v-if="pageReady"
     >

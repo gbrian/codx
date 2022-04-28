@@ -36,7 +36,7 @@
     </div>
     <div class="text-base pl-3 cursor-pointer mb-2"><ChatAltIcon class="h-5 w-5 float-left mr-2" />Recent</div>
     <div class="text-base pl-3 cursor-pointer mb-2"><StarIcon class="h-5 w-5 float-left mr-2" />Starred messages</div>
-    <div class="text-base pl-3 cursor-pointer mb-2" @click="$emit('calendar')"><CalendarIcon class="h-5 w-5 float-left mr-2" />Next events</div>
+    <div class="text-base pl-3 cursor-pointer mb-2" @click="$emit('calendar')" v-if="false"><CalendarIcon class="h-5 w-5 float-left mr-2" />Next events</div>
 
     <div class="flex justify-between text-base pl-3 mt-3 cursor-pointer border-b border-slate-800"
       @click="channelsOpen = !channelsOpen"

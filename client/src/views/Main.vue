@@ -63,7 +63,7 @@
           v-if="showHeader"
         />
       <div class="lg:flex flex-row hidden h-full w-full">
-        <div class="grow" v-if="currentClinic">
+        <div class="grow mt-1" v-if="currentClinic">
           <NekoRoom :room="currentClinic" />
         </div>
         <div :class="['flex',

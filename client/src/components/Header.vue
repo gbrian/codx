@@ -1,6 +1,6 @@
 <template>
   <div
-      class="text-primary py-2 px-4 flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full"
+      class="text-primary flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full"
     >
     <div class="flex flex-row">
       <MenuIcon 
@@ -14,13 +14,14 @@
         @click="$emit('close-explorer')"
       />
       <div class="flex flex-col">
-        <div class="flex flex-row">
+        <div class="flex flex-row mt-1">
           <div class="dropdown"
             :title="`@${user.username}`"
             v-for="(user, ix) in chatUsers" :key="ix">
             <UserAvatar
               :tabindex="ix"
               :user="user"
+              :size="8"
               class="mr-1 cursor-pointer"
             >
               <template v-slot:badges>
@@ -36,7 +37,7 @@
           <UserAdd class="" :ignoreUsers="chatUsers" @user="user => addUser(user)" />
         </div>
         <div class="flex items-center space-x-6 prose">
-          <small><strong><i><Label :label="headerTitle" /></i></strong></small>
+          <small><strong><i><Label :label="headerTitle" @labelChange="label => onHeaderTitleChange(label)" :canEdit="canEditHeader" /></i></strong></small>
         </div>
       </div>
     </div>
@@ -67,14 +68,14 @@
           :class="['avatar', camOn ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
           @click="onCam"
         >
-          <VideoCameraIcon class="hidden md:block cursor-pointer w-5 "/>
+          <VideoCameraIcon class="cursor-pointer w-5 "/>
         </div>
         <div
           :class="['online btn btn-sm btn-error text-white rounded-md']"
           @click="onEndCall"
           v-if="call"
         >
-          <PhoneMissedCallIcon class="hidden md:block cursor-pointer w-5 "/>
+          <PhoneMissedCallIcon class="cursor-pointer w-5 "/>
         </div>
       </div>
 
@@ -84,15 +85,36 @@
           @click="$storex.clinic.releaseControl()"
           v-if="$storex.clinic.hostingClinic"
         >
-          <CursorClickIcon class="hidden md:block cursor-pointer w-5 "/>
+          <CursorClickIcon class="cursor-pointer w-5 "/>
         </div>
         <div
           :class="['avatar', liveClinic ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
           tabindex="0"
           @click="toggleClinic"
         >
-          <TerminalIcon class="w-6" />
+          <MenuIcon class="w-6" v-if="$storex.clinic.hostingClinic"/>
+          <TerminalIcon class="w-6" v-else />
           <div class="ml-2" v-if="chat?.clinic">{{ chat?.clinic?.name }}</div>
+        </div>
+        <div
+          class="dropdown dropdown-end"
+          v-if="$storex.clinic.hostingClinic"
+        >
+          <label tabindex="0">
+            <ExternalLinkIcon class="w-5 cursor-pointer mt-1"/>
+          </label>
+          <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+            <li>
+              <a target="_blank" :href="`${$storex.clinic.hostingClinic.url}-coder/`">
+                <ExternalLinkIcon class="w-5 mr-2"/>Coder
+              </a>
+            </li>
+            <li> 
+              <a target="_blank" :href="`${$storex.clinic.hostingClinic.url}-mysite/`">
+                <ExternalLinkIcon class="w-5 mr-2"/>Website
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -112,7 +134,9 @@ import {
   StopIcon,
   BanIcon,
   CursorClickIcon,
-  EyeIcon
+  EyeIcon,
+  CogIcon,
+  ExternalLinkIcon
 } from "@heroicons/vue/outline"
 import UserAdd from '@/components/UserAdd.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -132,6 +156,8 @@ export default {
     BanIcon,
     EyeIcon,
     CursorClickIcon,
+    CogIcon,
+    ExternalLinkIcon,
     UserAdd,
     UserAvatar,
     Label
@@ -184,6 +210,9 @@ export default {
         return this.chat.name || `you  & ${chatUsers.map(u => '@' + u.username).join(", ")}`
       }
       return null
+    },
+    canEditHeader () {
+      return this.chat?.isAdmin
     }
   },
   watch: {
@@ -239,6 +268,11 @@ export default {
         return this.$emit('join-clinic', this.clinics[0])
       }
       return this.$emit('new-clinic')
+    },
+    onHeaderTitleChange (newName) {
+      if (this.chat) {
+        this.$storex.chat.updateChat({ id: this.chat.id, changes: { name: newName } })
+      }
     }
   },
   beforeUnmount () {

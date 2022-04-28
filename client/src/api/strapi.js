@@ -38,6 +38,11 @@ class Strapi {
     return useFetch.delete("api/chats/" + chat.id, { headers })
   }
 
+  async updateChat (id, changes) {
+    const { headers } = this
+    return useFetch.put("api/chats/" + id, changes, { headers })
+  }
+
   async removeUserFromChat ({ user: { id: userId }, chat: { id } }) {
     const { headers } = this
     return useFetch.delete(`api/chats/${id}?removeUser=${userId}`, { headers })

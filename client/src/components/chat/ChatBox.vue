@@ -65,7 +65,7 @@ export default {
     },
     dayMessages () {
       !this.hasScrolled && requestAnimationFrame(this.scrollToBottom.bind(this))
-      return this.chat.messages
+      const byDay = this.chat.messages
         .filter(m => m.content)
         .reduce((acc, m) => {
           const { createdAt: ts } = m
@@ -87,6 +87,7 @@ export default {
           })
           return acc
         }, [])
+      return byDay
     },
     users () {
       const { admins, guests } = this.chat
@@ -119,7 +120,8 @@ export default {
           if (!event && acc.length) {
             const { id: mid } = from || {}
             const { from: { id: lid }, entries, createdAtFormat: lcatf } = acc[acc.length-1]
-            if (lid === mid) {
+            const hasEvents = entries.filter(({ extra = {} }) => !!extra && extra.event).length !== 0
+            if (!hasEvents && lid === mid) {
               const nots = createdAt.diff(lcatf, 'minutes') < 2
               entries.push({
                 id,

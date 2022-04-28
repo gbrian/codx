@@ -44,28 +44,32 @@ module.exports = createCoreController('api::neko-room.neko-room', ({ strapi }) =
       codx.room.deleteRoom(room)
       return strapi.$api('neko-room').delete(id)
     },
-    async proxy ({ query: { token }}) {
-      const nekoRooms = await codx.room.roomProxies(token)
-      const http = nekoRooms.reduce((conf, { middlewares, services, routers }) => {
-        conf.middlewares = {
-          ...conf.middlewares,
-          ...middlewares
-        }
-        conf.services = {
-          ...conf.services,
-          ...services
-        }
-        conf.routers = {
-          ...conf.routers,
-          ...routers
-        }
-        return conf
-      },
-      { middlewares: {},
-        services: {},
-        routers: {}
-      })
-      return { http }
+    async proxy ({ query: { token, host, protocol }}) {
+      try {
+        const nekoRooms = await codx.room.roomProxies({ token, host, protocol: protocol || 'https' })
+        const http = nekoRooms.reduce((conf, { middlewares, services, routers }) => {
+          conf.middlewares = {
+            ...conf.middlewares,
+            ...middlewares
+          }
+          conf.services = {
+            ...conf.services,
+            ...services
+          }
+          conf.routers = {
+            ...conf.routers,
+            ...routers
+          }
+          return conf
+        },
+        { middlewares: {},
+          services: {},
+          routers: {}
+        })
+        return { http }
+      } catch (ex) {
+        console.error(ex)
+      }
     },
     async installer ({ params: { id }, state: { user }, request: { ip, header: { authorization } } }) {
       user.token = authorization.split(" ")[1]
