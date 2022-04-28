@@ -87,7 +87,7 @@ export const mutations = mutationTree(state, {
     }
     $storex.chat.addChat({
       ...state.chats[chatId],
-      messages
+      messages: [...messages]
     })
     if (state.openedChat && id === state.openedChat.id) {
       if (!state.openedChat.visible) {
