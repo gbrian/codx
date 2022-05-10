@@ -13,7 +13,13 @@ export const getters = getterTree(state, {
   userChats: ({ chats }) => Object.keys(chats)
                             .map(k => chats[k])
                             .filter(({ isChannel }) => !isChannel)
-                            .sort(a => a.clinic ? -1 : 1)
+                            .sort(a => a.clinic ? -1 : 1),
+  unreadMessages: ({ chats }) => Object.keys(chats)
+                                  .map(k => chats[k])
+                                  .filter(({ isChannel, unreadMessages }) => !isChannel && unreadMessages),
+  missingMentions: ({ chats }) => Object.keys(chats)
+                                  .map(k => chats[k])
+                                  .filter(({ isChannel, missingMention }) => !isChannel && missingMention)
 })
 
 function prepareChat (chat, { visible }) {
@@ -47,6 +53,10 @@ function prepareChat (chat, { visible }) {
     },
     get isAdmin () {
       return this.admins.filter(a => a.id === me.id).length !== 0
+    },
+    get chatName () {
+      return this.name || this.users.filter(({ username }) => me.username !== username)
+        .map(({ username }) => '@'+username).join("-")
     }
   }
 }
@@ -87,7 +97,7 @@ export const mutations = mutationTree(state, {
     }
     $storex.chat.addChat({
       ...state.chats[chatId],
-      messages: [...messages]
+      messages: JSON.parse(JSON.stringify(messages))
     })
     if (state.openedChat && id === state.openedChat.id) {
       if (!state.openedChat.visible) {

@@ -4,13 +4,16 @@
       <label class="label">
         <span class="label-text" v-if="editing">Editing, press Esc. to cancel</span>
       </label>
-      <input type="text" :placeholder="placeholder || 'Type messages'"
+      <textarea type="text" :placeholder="placeholder || 'Type messages'"
+        ref="textarea"
         :class="['input block w-full md:px-4 px-3 md:py-3 py-2 focus:outline-none text-primary text-sm border-gray-300 rounded',
           editing ? 'border-error' : '']"
-        v-model="message"
-        @keydown.enter="$emit('send-message', message)"
+        v-model="editMessage"
+         @keydown.enter.exact.prevent="$emit('send-message', editMessage)"
+        @keydown.enter.shift.exact.prevent="newLine"
         @keydown.esc="$emit('abort-editing')"
-      >
+        @keypress="resize"
+      />
     </div>
     <EmojiHappyIcon class="cursor-pointer md:w-5 w-7 text-primary" />
     <PaperClipIcon class="cursor-pointer md:w-5 w-7 text-primary" />
@@ -44,8 +47,19 @@ export default {
   props: ['show', 'chat', 'closeMe', 'editing', 'message', 'placeholder'],
   data() {
     return {
-      editMessage: this.$props.message
+      editMessage: this.$props.message,
+      lineHeight: null
     }
   },
+  methods: {
+    newLine () {
+      this.editMessage += '\n'
+      this.resize()
+    },
+    resize() {
+      const { textarea } = this.$refs;
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }
 }
 </script>

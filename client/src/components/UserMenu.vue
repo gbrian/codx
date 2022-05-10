@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="dropdown dropdown-right dropdown-end text-primary" v-if="user">
-      <Avatar tabindex="0" class="cursor-pointer" :url="user.avatar" :online="online"/>
-      <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-40">
+    <div class="dropdown dropdown-right dropdown-end" v-if="user">
+      <UserAvatar tabindex="0" class="cursor-pointer" :user="user"/>
+      <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-md w-40">
         <li>
           <a
             @click="$emit('option', 'profile')"
@@ -53,7 +53,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue"
 import { PencilAltIcon, LogoutIcon, UserAddIcon } from "@heroicons/vue/solid"
-import Avatar from './Avatar.vue'
+import UserAvatar from './UserAvatar.vue'
 import AboutDialog from './AboutDialog.vue'
 
 export default {
@@ -65,7 +65,7 @@ export default {
     PencilAltIcon,
     LogoutIcon,
     UserAddIcon,
-    Avatar,
+    UserAvatar,
     AboutDialog
   },
   props: {

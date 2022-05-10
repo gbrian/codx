@@ -29,6 +29,7 @@ export const mutations = mutationTree(state, {
         if (state.lastHeartBeat && (new Date() - state.lastHeartBeat) > 30000) {
           console.error("session", "user offline")
           state.isOnline = false
+          $storex.user.setOnline(state.isOnline)
           if (!socket.connected) {
             $storex.session.init()
           }
@@ -65,10 +66,13 @@ export const mutations = mutationTree(state, {
         }
       })
       socket.on('heartbeat', data => {
-        const { network: { friends } } = data
+        const { network: { friends }, statistics } = data
         state.lastHeartBeat = new Date()
         state.isOnline = true
+
         $storex.network.updateFriendStatus(friends)
+        $storex.user.updateStatistics(statistics)
+        $storex.user.setOnline(state.isOnline)
       })
       socket.on('welcome', () => {
         $storex.user.fetchAccessToken()

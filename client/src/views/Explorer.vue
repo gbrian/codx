@@ -83,8 +83,10 @@
         :class="['text-base cursor-pointer ml-3 mt-2 flex felx-row group justify-between', chat.id === openedChat?.id ? 'font-bold' : '']"
         @click="$emit('open-chat', chat)"
       >
-          <div class="grow flex">
-            <TerminalIcon class="w-4 mr-2" v-if="chat.clinic" />
+          <div class="grow flex group-hover:bg-accent-focus group-hover:text-accent-content hover:px-1 rounded-md">
+            <TerminalIcon class="w-4 mr-2 hover:animate-pulse"
+              @click.prevent.stop="$emit('open-chat', {...chat, openClinic: true })"
+              v-if="chat.clinic" />
             <h4 class="">
               @{{ chatName(chat)}}
             </h4>

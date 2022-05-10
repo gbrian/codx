@@ -17,6 +17,7 @@
           canCreate ? '' : 'opacity-20 cursor-not-allowed']"
           @click="canCreate && onOk()">Create</button>
         <button class="btn shadow-sm px-4 py-2 mr-3" @click="$emit('cancel')">Cancel</button>
+        <input type="text" placeholder="Promo code..." class="input input-bordered w-full max-w-xs">
       </template>
       <div class="">
         <div class="form-control">
@@ -108,35 +109,38 @@ export default {
       companySelected: 0,
       powerSize: 0,
       powerSizeShown: false,
-      templates: this.$props.clinicTemplates || {
-        "blank": {
+      templates: this.$props.clinicTemplates || [
+        {
           image: "",
           title: "Blank",
           description: "Empty project...",
           tags: ['nodejs', 'python', 'java'],
           media: [
             { type: 'image', url: '/logo.png' }
-          ]
+          ],
+          credits: 100
         },
-        "web": {
+        {
           image: "",
           title: "Web",
           description: "Web APP project.",
           tags: ['js', 'vue', 'react'],
           media: [
             { type: 'image', url: '/logo.png' }
-          ]
+          ],
+          credits: 200
         },
-        "data": {
+        {
           image: "",
           title: "Data ML/AI",
           description: "Data anlysis project.",
           tags: ['jupyter-lab', 'tensorflow', 'conda', 'pytorch'],
           media: [
             { type: 'image', url: '/logo.png' }
-          ]
+          ],
+          credits: 300
         }
-      }
+      ]
     }
   },
   created () {
@@ -185,7 +189,10 @@ export default {
       return this.subscription
     },
     canCreate () {
-      return this.name
+      return this.name && this.template >= 0 && this.canPay
+    },
+    canPay () {
+      return (this.user.credits||0) >= this.templates[this.template].credits
     }
   },
   methods: {

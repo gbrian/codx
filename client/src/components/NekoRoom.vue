@@ -105,6 +105,9 @@ export default {
           .video .player {
             background-color: transparent !important;
           }
+          video {
+            filter: brightness(1)
+          }
           .user-layer {
             position: absolute;
             z-index: 1;

@@ -27,6 +27,7 @@
     "vue-hooks-form": "^0.2.2",
     "vue-mobile-detection": "^2.0.1",
     "vue-router": "^4.0.12",
+    "vue3-markdown-it": "^1.0.10",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

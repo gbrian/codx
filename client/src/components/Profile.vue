@@ -1,117 +1,15 @@
 <template>
   <div
-    class="
-      grid
-      items-center
-      gap-4
-      p-4
-      py-8
-      place-items-center
-      flex-shrink-0
-      col-span-3
-      row-span-3
-      mx-2
-      xl:mx-0
-      w-72
-      xl:w-auto
-      place-self-start
-      xl:w-full
-    "
+    class="flex flex-col place-items-center mt-4 gap-4"
   >
-    <div class="dropdown">
-      <div tabindex="0">
-        <div class="avatar online">
-          <div
-            class="
-              w-24
-              h-24
-              p-px
-              mask mask-squircle
-              bg-base-content bg-opacity-10
-            "
-          >
-            <img
-              :src="user.avatar"
-              width="94"
-              height="94"
-              alt="Avatar Tailwind CSS Component"
-              class="mask mask-squircle"
-            />
-          </div>
-        </div>
-      </div>
-      <div tabindex="0" class="py-2 dropdown-content">
-        <div
-          class="
-            shadow-xl
-            w-72
-            card
-            compact
-            bg-neutral-focus
-            text-neutral-content
-            rounded-box
-          "
-        >
-          <div class="card-body">
-            <h2 class="font-extrabold capitalize card-title">
-              avatar component
-            </h2>
-            <p class="text-sm text-neutral-content text-opacity-80">
-              Use avatar component with any size
-            </p>
-            <div class="flex justify-end mt-4">
-              <a
-                href="/components/avatar"
-                class="btn btn-primary btn-sm xl:btn-md"
-              >
-                See component
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UserAvatar :user="user" size="full"/>
     <div>
-      <div class="dropdown w-full">
-        <div tabindex="0">
-          <div class="text-center">
-            <div class="text-lg font-extrabold">Betsy Braddock</div>
-            <div class="my-3 text-sm text-base-content text-opacity-60">
-              Strategic Art Manager
-              <br />Global Illustration Observer <br />Business Alignment
-              Developer
-            </div>
-          </div>
-        </div>
-        <div tabindex="0" class="py-2 dropdown-content">
-          <div
-            class="
-              shadow-xl
-              w-72
-              card
-              compact
-              bg-neutral-focus
-              text-neutral-content
-              rounded-box
-            "
-          >
-            <div class="card-body">
-              <h2 class="font-extrabold capitalize card-title">
-                card component
-              </h2>
-              <p class="text-sm text-neutral-content text-opacity-80">
-                Card component is used to show products, features and more.
-              </p>
-              <div class="flex justify-end mt-4">
-                <a
-                  href="/components/card"
-                  class="btn btn-primary btn-sm xl:btn-md"
-                >
-                  See component
-                </a>
-              </div>
-            </div>
-          </div>
+      <div class="text-center prose">
+        <h2 class="text-lg font-extrabold">{{ `@${user.username}` }}</h2>
+        <div class="my-3 text-sm text-base-content text-opacity-60">
+          Strategic Art Manager
+          <br />Global Illustration Observer <br />Business Alignment
+          Developer
         </div>
       </div>
       <div class="dropdown w-full">
@@ -214,9 +112,11 @@
 </template>
 <script>
 import ThemeSelector from './ThemeSelector.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 export default {
   components: {
-    ThemeSelector
+    ThemeSelector,
+    UserAvatar
   },
   props: ['user']
 };

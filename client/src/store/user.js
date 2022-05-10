@@ -23,6 +23,7 @@ export const mutations = mutationTree(state, {
     state.token = token
     state.user = user
     state.lastLogin = new Date()
+    $storex.user.updateStatistics(user.statistics)
     const { username, chats, channels, clinics, session = {} } = user || {}
     // TODO: pass to neko
     localStorage.setItem("displayname", username)
@@ -33,6 +34,23 @@ export const mutations = mutationTree(state, {
     $storex.clinic.setClinics(clinics)
     $storex.chat.setChats(chats)
     $storex.channel.setChannels(channels)
+  },
+  updateStatistics ({ user }, statistics) {
+    if (!statistics) {
+      return
+    }
+    const kv = Object.keys(statistics).map(k => [k, statistics[k]])
+    const dates = kv.filter(([k,v]) => /[0-9]{4}-[0-9]{2}-[0-9]{2}/.exec(v))
+                    .map(([k,v]) => [k, Date.parse(v)])
+                    .reduce((acc, v) => [acc, acc[v[0]] = v[1]][0], {})
+    user.statistics = {
+      ...user.statistics || {},
+      ...statistics,
+      ...dates
+    }
+  },
+  setOnline ({ user }, online) {
+    user.online = online
   }
 })
 

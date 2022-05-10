@@ -45,6 +45,16 @@ const routes = [
     path: "/join/@:joinMe",
     name: "JoinMe",
     component: () => import("../views/Main.vue"),
+  },
+  {
+    path: "/clinic/@:clinicName",
+    name: "JoinClinic",
+    component: () => import("../views/Main.vue"),
+  },
+  {
+    path: "/clinic/run/:runClinicName",
+    name: "RunClinic",
+    component: () => import("../views/Main.vue"),
   }
 ];
 

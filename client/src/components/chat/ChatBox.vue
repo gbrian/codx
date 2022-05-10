@@ -8,7 +8,7 @@
         <div class="chat-date"
           v-for="(dayMessages, dix) in dayMessages" :key="dix"
         >
-          <div class="divider mb-6"><span class="bg-info border rounded-lg px-3 py-1">{{ dayMessages.displayDate }}</span></div>
+          <div class="mb-6 text-center"><span class="bg-neutral text-neutral-content rounded-md px-3 py-1">{{ dayMessages.displayDate }}</span></div>
           <div
             class="mb-4"
             v-for="(message, ix) in groupedMessages(dayMessages.messages)" :key="ix"
@@ -63,14 +63,20 @@ export default {
     me () {
       return this.$storex.user.user
     },
+    chatMessages () {
+      const now = moment()
+      return this.chat.messages.filter(({ createdAt, extra }) => !extra || now.diff(createdAt, 'hours') < 1 )
+    },
     dayMessages () {
       !this.hasScrolled && requestAnimationFrame(this.scrollToBottom.bind(this))
-      const byDay = this.chat.messages
+      const now = moment()
+      const byDay = this.chatMessages
         .filter(m => m.content)
         .reduce((acc, m) => {
           const { createdAt: ts } = m
           const createdAt = moment(ts)
-          const displayDate = createdAt.fromNow()
+          const messageDateFromNow = now.diff(createdAt, 'days')
+          const displayDate = messageDateFromNow > 2 ? createdAt.format("MMMM D, YYYY") : createdAt.fromNow()
           if (acc.length) {
             const { createdAt: ldd, messages } = acc[acc.length-1]
             const sameDay = createdAt.format("DD-MM-YYYY") === ldd.format("DD-MM-YYYY")

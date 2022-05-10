@@ -13,9 +13,10 @@ import * as search from './search'
 import * as channel from './channel'
 import * as company from './company'
 import * as log from './log'
+import * as global from './global'
 
 const storePattern = {
-  modules: { user, chat, clinic, call, session, network, search, channel, company, log },
+  modules: { user, chat, clinic, call, session, network, search, channel, company, log, global },
 }
 
 const store = createStore(storePattern)

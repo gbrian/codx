@@ -1,16 +1,17 @@
 <template>
-  <div class="flex flex-row h-screen overflow-hidden w-full bg-base-200">
+  <div class="flex flex-row h-screen overflow-hidden w-full bg-base-200" ref="main">
     <SideBar
       class=""
       @sideBar="toggleSideBar"
       @home="goHome"
       @switch-company="onSwitchCompany"
+      v-if="sideBarVisible"
     />
     <div :class="[
       'detail-bar bg-neutral-focus text-neutral-content drop-shadow-md',
       'grow h-full py-2 relative',
       'flex flex-col justify-between',
-      '']"
+      'w-1/3']"
       v-if="explorerBarVisible">
       <Explorer class="explorer w-full text-sm pl-2 pr-4"
         v-if="explorerVisible"
@@ -22,9 +23,9 @@
         @task-manager="onTaskManager"
         @calendar="() => toggleSideBar('calendar')"
       />
-      <Profile v-if="profileVisible" :user="profileVisible"/>
+      <Profile v-if="profileVisible" :user="profileUser"/>
       <UserCalendar class="w-full" v-if="calendarVisible"/>
-      <InviteBtn />
+      <InviteBtn v-if="false" />
     </div>
     <TaskManager class="w-1/3"
       v-if="taskManager"
@@ -50,6 +51,8 @@
           :explorerVisible="explorerVisible"
           :chatVisible="chatVisible"
           :videoVisible="videoCall && !videoHidden"
+          :clinic="currentClinic"
+          :isFullscreen="isFullscreen"
           @leave-clinic="leaveClinic"
           @delete-clinic="deleteClinic"
           @join-clinic="joinClinic"
@@ -60,11 +63,12 @@
           @remove-user="removeUser"
           @user-profile="showUserProfile"
           @toggle-video="toggleVideoHidden"
+          @clinic-fullScreen="clinicFullScreen"
           v-if="showHeader"
         />
       <div class="lg:flex flex-row hidden h-full w-full">
         <div class="grow mt-1" v-if="currentClinic">
-          <NekoRoom :room="currentClinic" />
+          <NekoRoom :room="currentClinic" ref="nekoRoom" />
         </div>
         <div :class="['flex',
             stackPanels ? 'flex-col-reverse' : 'flex-row',
@@ -145,16 +149,23 @@ export default {
       loading: false,
       taskManager: null,
       hero: 'welcome',
-      profileUser: null
+      profileUser: null,
+      isFullscreen: false
     };
   },
   mounted () {
-    const { chat, channel } = this.$route.params
-    if (chat) {
-      this.onOpenChat({ id: parseInt(chat) })
+    const { chat: chatName, channel, runClinicName } = this.$route.params
+    if (chatName) {
+      const  { chats } = this.$storex.chat
+      const chat = Object.keys(chats).map(id => chats[id])
+        .filter(c => c.chatName === chatName)[0]
+      chat && this.onOpenChat(chat)
     }
     if (channel) {
       this.onOpenChannel({ id: parseInt(channel) })
+    }
+    if (runClinicName) {
+      this.onAcademyCourses()
     }
   },
   computed: {
@@ -179,6 +190,9 @@ export default {
     },
     showLeftBar () {
       return this.sideBar !== ''
+    },
+    sideBarVisible () {
+      return this.currentClinic ? this.explorerVisible : true
     },
     showChannel () {
       return this.$storex.channel.currentChannel
@@ -240,7 +254,10 @@ export default {
       }
       await this.resetView()
       await this.$storex.chat.setOpenedChat({ id: chat.id, visible: true })
-      this.$router.push(`/chat/${chat.id}`)
+      if (chat.openClinic && chat.clinic) {
+        this.joinClinic(chat.clinic)
+      }
+      this.$router.push(`/chat/${chat.chatName}`)
     },
     async onOpenChannel (channel) {
       this.resetView()
@@ -328,7 +345,9 @@ export default {
         }
       }
       this.chatHidden = !this.chatHidden
-      this.$storex.chat.openedChat.visible = !this.chatHidden 
+      if (this.$storex.chat.openedChat) {
+        this.$storex.chat.openedChat.visible = !this.chatHidden
+      }
     },
     toggleVideoHidden () {
       this.videoHidden = !this.videoHidden
@@ -363,6 +382,16 @@ export default {
       this.$storex.chat.removeUser({ user, chat })
     },
     showUserProfile (user){
+    },
+    clinicFullScreen () {
+      const { main } = this.$refs
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+        this.isFullscreen = false
+      } else {
+        main.requestFullscreen()
+        this.isFullscreen = true
+      }
     }
   }
 };

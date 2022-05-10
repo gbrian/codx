@@ -9,7 +9,7 @@
         <div class="flex items-start space-x-1 chat">
           <div class="ml-3 w-full flex flex-col items-start">
             <div
-              class="bg-primary text-primary-content w-full rounded-lg rounded-bl-none text-right p-3 px-5 space-y-1"
+              class="bg-primary text-primary-content w-full rounded-r-lg rounded-bl-none text-right p-3 px-5 space-y-1"
             >
               <div
                 v-for="(entry, ix) in message.entries" :key="ix"
@@ -23,7 +23,7 @@
                   imgClass="w-5 transform rotate-90"
                   @edit-message="$emit('edit-message', entry)"
                 >
-                  <div v-html="formatMessage(entry)" class="prose"></div>
+                  <ChatText :content="formatMessage(entry)" />
                 </MessageOptions>
               </div>
             </div>
@@ -51,7 +51,7 @@
           />
           <div class="w-full flex flex-col items-end">
             <div
-              class="bg-secondary text-secondary-content rounded-lg rounded-br-none text-left p-3 px-5 space-y-1"
+              class="bg-secondary text-secondary-content rounded-l-lg rounded-br-none text-left p-3 px-5 space-y-1"
             >
               <div
                 v-for="(entry, ix) in message.entries" :key="ix"
@@ -65,7 +65,7 @@
                   imgClass="w-5 transform rotate-90"
                   @edit-message="$emit('edit-message', entry)"
                 >
-                  <div v-html="formatMessage(entry)" class="prose"></div>
+                  <ChatText :content="formatMessage(entry)" />
                 </MessageOptions>
               </div>
             </div>
@@ -89,13 +89,15 @@ import {
 } from "@heroicons/vue/outline";
 import MessageOptions from '../MessageOptions.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import ChatText from '@/components/chat/ChatText.vue'
 
 export default {
   components: {
     ClockIcon,
     EmojiHappyIcon,
     MessageOptions,
-    UserAvatar
+    UserAvatar,
+    ChatText
   },
   props: ['isMe', 'message'],
   methods: {

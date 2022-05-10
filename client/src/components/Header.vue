@@ -3,8 +3,8 @@
       class="text-primary flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full"
     >
     <div class="flex flex-row">
-      <MenuIcon 
-        :class="['cursor-pointer w-7 ml-2 mr-5', liveClinic ? 'lg:hidde' : '']"
+      <Logo 
+        :class="['cursor-pointer w-10 h-10 my-4 mx-2', liveClinic ? 'lg:hidde' : '']"
         v-if="!explorerVisible && liveClinic"
         @click="$emit('open-explorer')"
       />
@@ -13,8 +13,8 @@
         v-if="explorerVisible && liveClinic"
         @click="$emit('close-explorer')"
       />
-      <div class="flex flex-col">
-        <div class="flex flex-row mt-1">
+      <div class="flex flex-col pt-2 px-2">
+        <div class="flex flex-row">
           <div class="dropdown"
             :title="`@${user.username}`"
             v-for="(user, ix) in chatUsers" :key="ix">
@@ -37,7 +37,9 @@
           <UserAdd class="" :ignoreUsers="chatUsers" @user="user => addUser(user)" />
         </div>
         <div class="flex items-center space-x-6 prose">
-          <small><strong><i><Label :label="headerTitle" @labelChange="label => onHeaderTitleChange(label)" :canEdit="canEditHeader" /></i></strong></small>
+          <div class="badge badge-outline">
+            <small><strong><i><Label :label="headerTitle" @labelChange="label => onHeaderTitleChange(label)" :canEdit="canEditHeader" /></i></strong></small>
+          </div>
         </div>
       </div>
     </div>
@@ -82,8 +84,8 @@
       <div class="flex space-x-2 p-2 border rounded-md">
         <div
           :class="['online btn btn-sm btn-accent rounded-md']"
-          @click="$storex.clinic.releaseControl()"
-          v-if="$storex.clinic.hostingClinic"
+          @click="clinic.releaseControl()"
+          v-if="clinic"
         >
           <CursorClickIcon class="cursor-pointer w-5 "/>
         </div>
@@ -92,25 +94,33 @@
           tabindex="0"
           @click="toggleClinic"
         >
-          <MenuIcon class="w-6" v-if="$storex.clinic.hostingClinic"/>
+          <StopIcon class="w-6" v-if="clinic"/>
           <TerminalIcon class="w-6" v-else />
           <div class="ml-2" v-if="chat?.clinic">{{ chat?.clinic?.name }}</div>
         </div>
         <div
+          :class="['btn btn-sm rounded-md', isFullscreen ? 'online btn-accent' : '']"
+          @click="$emit('clinic-fullScreen')"
+         v-if="clinic"
+        >
+          <ArrowsExpandIcon  class="w-6"/>
+        </div>
+        
+        <div
           class="dropdown dropdown-end"
-          v-if="$storex.clinic.hostingClinic"
+          v-if="clinic"
         >
           <label tabindex="0">
             <ExternalLinkIcon class="w-5 cursor-pointer mt-1"/>
           </label>
           <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
             <li>
-              <a target="_blank" :href="`${$storex.clinic.hostingClinic.url}-coder/`">
+              <a target="_blank" :href="`${clinic.url}-coder/`">
                 <ExternalLinkIcon class="w-5 mr-2"/>Coder
               </a>
             </li>
             <li> 
-              <a target="_blank" :href="`${$storex.clinic.hostingClinic.url}-mysite/`">
+              <a target="_blank" :href="`${clinic.url}-mysite/`">
                 <ExternalLinkIcon class="w-5 mr-2"/>Website
               </a>
             </li>
@@ -136,11 +146,13 @@ import {
   CursorClickIcon,
   EyeIcon,
   CogIcon,
-  ExternalLinkIcon
+  ExternalLinkIcon,
+  ArrowsExpandIcon,
 } from "@heroicons/vue/outline"
 import UserAdd from '@/components/UserAdd.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Label from '@/components/edit/Label.vue'
+import Logo from '@/components/Logo.vue'
 export default {
   components: {
     SearchIcon,
@@ -158,11 +170,13 @@ export default {
     CursorClickIcon,
     CogIcon,
     ExternalLinkIcon,
+    ArrowsExpandIcon,
     UserAdd,
     UserAvatar,
-    Label
+    Label,
+    Logo
   },
-  props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible'],
+  props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinic', 'isFullscreen'],
   data () {
     return {
       newCodingClinic: false
@@ -170,7 +184,7 @@ export default {
   },
   computed: {
     liveClinic () {
-      return this.$storex.clinic.currentClinic
+      return this.clinic
     },
     call () {
       return this.$storex.call.currentCall
@@ -193,21 +207,12 @@ export default {
     showChatToggle () {
       return this.liveClinic
     },
-    clinics () {
-      const { clinics } = this.$storex.clinic
-      const { chat: openedChat } = this
-      if (openedChat) {
-        return clinics.filter(({ chat }) => !chat || chat.id === openedChat.id)
-      }
-      return clinics
-    },
     me () {
       return this.$storex.user.user
     },
     headerTitle () {
       if (this.chat) {
-        const chatUsers = this.chat.users.filter(u => u.id !== this.me.id)
-        return this.chat.name || `you  & ${chatUsers.map(u => '@' + u.username).join(", ")}`
+        return this.chat.chatName
       }
       return null
     },
@@ -264,8 +269,8 @@ export default {
       if (this.liveClinic)  {
         return this.$emit('leave-clinic')
       }
-      if (this.clinics?.length) {
-        return this.$emit('join-clinic', this.clinics[0])
+      if (this.chat?.clinic) {
+        return this.$emit('join-clinic', this.chat?.clinic)
       }
       return this.$emit('new-clinic')
     },

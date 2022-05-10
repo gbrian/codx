@@ -3,6 +3,7 @@
       @close="$emit('close')"
       @ok="$emit('ok')"
       :btns="['ok']"
+      class="h-100vh"
     >
       <template v-slot:icon>
         <div class="text-center">
@@ -13,7 +14,7 @@
           </button>
         </div>
       </template>
-      <div class="h-1/4">
+      <div class="h-full">
         <div class="tabs ml-4 mb-4">
           <a :class="['tab tab-bordered', tabIndex === 0 ? 'tab-active': '']"
             @click="tabIndex = 0">Overview</a> 
@@ -51,7 +52,8 @@
           </p>
         </div>
         <div v-if="tabIndex === 1" class="w-full h-full pt-2 pb-6 prose scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
-          <VueMarkdown :source="templateInfo" class="w-full h-full p-5" />
+          <iframe border="0" :src="template.readme" class="w-full h-full" />
+          <VueMarkdown :source="templateInfo" class="w-full h-full p-5" v-if="false"/>
         </div>
       </div>
       <template v-slot:actions>
