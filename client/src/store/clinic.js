@@ -83,6 +83,9 @@ export const actions = actionTree(
     },
     releaseControl ({ state: { currentClinic } }) {
       currentClinic?.neko.remote.release()
+    },
+    sendEmote ({ state: { currentClinic }}, emote) {
+      currentClinic.neko.chat.sendEmote(emote)
     }
   },
 )

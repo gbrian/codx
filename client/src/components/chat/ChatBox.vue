@@ -109,8 +109,8 @@ export default {
   methods: {
     async sendMessage (message) {
       await this.$storex.chat.sendMessage({
-        chat: this.chat,
-        ...this.editing,
+        chat: { id: this.chat.id },
+        editing: { ...this.editing },
         content: message
       })
       this.abortEditing()
@@ -123,7 +123,8 @@ export default {
           const extra = m.extra || {}
           const { event } = extra
           const createdAt = moment(ts)
-          if (!event && acc.length) {
+          const accHasEvents = acc.some(({ event }) => !!event)
+          if (!event && acc.length && !accHasEvents) {
             const { id: mid } = from || {}
             const { from: { id: lid }, entries, createdAtFormat: lcatf } = acc[acc.length-1]
             const hasEvents = entries.filter(({ extra = {} }) => !!extra && extra.event).length !== 0

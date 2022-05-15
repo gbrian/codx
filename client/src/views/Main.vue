@@ -105,7 +105,7 @@ import Profile from "@/components/Profile.vue"
 import ChatList from "@/views/ChatList.vue"
 import Explorer from "@/views/Explorer.vue"
 import VideoCall from "@/views/VideoCall.vue"
-import Header from "@/components/Header.vue"
+import Header from "@/components/header/Header.vue"
 import SearchResults from "@/components/SearchResults.vue"
 import NewCodingClinicDialog from '@/components/NewCodingClinicDialog.vue'
 import NekoRoom from '@/components/NekoRoom.vue'

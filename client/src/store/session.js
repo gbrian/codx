@@ -8,7 +8,13 @@ export const state = () => ({
   userRoom: null,
   heartbeat: null,
   lastHeartBeat: null,
-  isOnline: false
+  isOnline: false,
+  activity: {
+    started: new Date(),
+    openClinics: [],
+    openChats: [],
+    clinicEvent: []
+  }
 })
 
 export const getters = getterTree(state, {

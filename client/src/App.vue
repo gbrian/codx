@@ -2,19 +2,23 @@
   <div class="h-screen overflow-y-auto">
     <Notifications />
     <router-view />
+    <Audio :audio="audio" />
   </div>
 </template>
 <script>
 import { themeChange } from 'theme-change'
 import Notifications from '@/components/Notifications.vue'
+import Audio from '@/components/Audio.vue'
 export default {
   components: {
-    Notifications
+    Notifications,
+    Audio
   },
   data () {
     return {
       doLogin: false,
-      currentTheme: localStorage.getItem("theme")
+      currentTheme: localStorage.getItem("theme"),
+      audio: null
     }
   },
   mounted () {
@@ -37,6 +41,10 @@ export default {
     },
     setTheme (theme) {
       this.currentTheme = theme
+    },
+    setAudio (audio) {
+      this.audio = audio
+      setTimeout(() => { this.audio = null }, 2000)
     }
   }
 }

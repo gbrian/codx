@@ -1,6 +1,7 @@
 <template>
   <div :class="['avatar indicator not-prose',
-      user.online && !video ? 'online' : ''
+      online && !video ? 'online' : '',
+      onlineChanged ? 'animate-pulse': ''
     ]"
     :title="'@' + user.username">
   <div class="absolute z-10">
@@ -18,7 +19,7 @@
       v-if="video"
       class="rounded-md object-fill z-0"
     ></video>
-    <img :src="user.avatar" :width="size || 10" :height="size || 10" :class="user.online ? '' : 'grayscale'" v-else>
+    <img :src="user.avatar" :width="size || 10" :height="size || 10" :class="online ? '' : 'grayscale'" v-else>
   </div>
 </div> 
 </template>
@@ -30,7 +31,12 @@ export default {
   components: {
     MicrophoneIcon
   },
-  props: ['user', 'size', 'ring'],
+  props: ['user', 'size', 'ring', 'showOnlineIf'],
+  data () {
+    return {
+      onlineChanged: false
+    }
+  },
   computed: {
     video () {
       const { video } = this.user
@@ -48,6 +54,17 @@ export default {
       const { user, video, size, ring } = this
       return video ? 'rounded-btn w-24 h-12' :
         [`bg-neutral-focus rounded-full w-${size || 10} h-${size || 10}`, (ring ? `ring ring-primary ring-offset-base-${ring} ring-offset-2` : '')]
+    },
+    online () {
+      return this.showOnlineIf === undefined ? this.user.online :
+        this.user.online && this.showOnlineIf
+    }
+  },
+  watch: {
+    online (newVal) {
+      this.$emit('user-online', { user: this.user, isOnline: newVal })
+      this.onlineChanged = true
+      setTimeout(() => { this.onlineChanged = false }, 3000)
     }
   }
 }

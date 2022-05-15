@@ -1,6 +1,6 @@
 <template>
   <div
-      class="text-primary flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full"
+      class="text-primary flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full px-2"
     >
     <div class="flex flex-row">
       <Logo 
@@ -22,7 +22,9 @@
               :tabindex="ix"
               :user="user"
               :size="8"
+              :showOnlineIf="isUserConnected(user)"
               class="mr-1 cursor-pointer"
+              @user-online="onUserOnlineChange"
             >
               <template v-slot:badges>
                 <TerminalIcon class="w-4 bg-neutral-focus text-neutral-content" v-if="userOnClinic(user) && !userHostingClinic(user)" />
@@ -81,52 +83,12 @@
         </div>
       </div>
 
-      <div class="flex space-x-2 p-2 border rounded-md">
-        <div
-          :class="['online btn btn-sm btn-accent rounded-md']"
-          @click="clinic.releaseControl()"
-          v-if="clinic"
-        >
-          <CursorClickIcon class="cursor-pointer w-5 "/>
-        </div>
-        <div
-          :class="['avatar', liveClinic ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
-          tabindex="0"
-          @click="toggleClinic"
-        >
-          <StopIcon class="w-6" v-if="clinic"/>
-          <TerminalIcon class="w-6" v-else />
-          <div class="ml-2" v-if="chat?.clinic">{{ chat?.clinic?.name }}</div>
-        </div>
-        <div
-          :class="['btn btn-sm rounded-md', isFullscreen ? 'online btn-accent' : '']"
-          @click="$emit('clinic-fullScreen')"
-         v-if="clinic"
-        >
-          <ArrowsExpandIcon  class="w-6"/>
-        </div>
-        
-        <div
-          class="dropdown dropdown-end"
-          v-if="clinic"
-        >
-          <label tabindex="0">
-            <ExternalLinkIcon class="w-5 cursor-pointer mt-1"/>
-          </label>
-          <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li>
-              <a target="_blank" :href="`${clinic.url}-coder/`">
-                <ExternalLinkIcon class="w-5 mr-2"/>Coder
-              </a>
-            </li>
-            <li> 
-              <a target="_blank" :href="`${clinic.url}-mysite/`">
-                <ExternalLinkIcon class="w-5 mr-2"/>Website
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <ClinicControls class="flex space-x-2 p-2 border rounded-md"
+        :clinic="clinic || chat?.clinic"
+        :liveClinic="liveClinic"
+        @full-screen="$emit('full-screen')"
+        @toggle-clinic="toggleClinic"
+      />
     </div>
   </div>
 </template>
@@ -147,12 +109,13 @@ import {
   EyeIcon,
   CogIcon,
   ExternalLinkIcon,
-  ArrowsExpandIcon,
+  ArrowsExpandIcon
 } from "@heroicons/vue/outline"
 import UserAdd from '@/components/UserAdd.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import Label from '@/components/edit/Label.vue'
 import Logo from '@/components/Logo.vue'
+import ClinicControls from '@/components/header/ClinicControls.vue'
 export default {
   components: {
     SearchIcon,
@@ -174,7 +137,8 @@ export default {
     UserAdd,
     UserAvatar,
     Label,
-    Logo
+    Logo,
+    ClinicControls
   },
   props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinic', 'isFullscreen'],
   data () {
@@ -278,6 +242,12 @@ export default {
       if (this.chat) {
         this.$storex.chat.updateChat({ id: this.chat.id, changes: { name: newName } })
       }
+    },
+    isUserConnected (user) {
+      return user.isMe || (user.openedChat && user.openedChat === this.chat?.id)
+    },
+    onUserOnlineChange ({ user, isOnline }) {
+      isOnline && this.$root.setAudio("pop-up")
     }
   },
   beforeUnmount () {
