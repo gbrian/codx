@@ -1,8 +1,7 @@
 <template>
-  <Dialog :title="'New coding clininc'">
+  <Dialog>
       <template v-slot:icon>
         <div class="flex flex-col">
-          <div class="prose text-center mb-2"><h2>Host</h2></div>
           <AvatarSelect
             class=""
             selectedSize="12"
@@ -17,8 +16,9 @@
           canCreate ? '' : 'opacity-20 cursor-not-allowed']"
           @click="canCreate && onOk()">Create</button>
         <button class="btn shadow-sm px-4 py-2 mr-3" @click="$emit('cancel')">Cancel</button>
-        <input type="text" placeholder="Promo code..." class="input input-bordered w-full max-w-xs">
+        <input type="text" placeholder="Promo code..." class="input input-bordered w-full max-w-xs" v-if="!newTemplate">
       </template>
+      <div class="prose"><h2>New coding clininc</h2></div>
       <div class="">
         <div class="form-control">
           <label class="label">
@@ -50,28 +50,29 @@
             <small>{{ card.description }}</small>
           </div>
         </div>
-
-        <label class="label cursor-pointer" @click="powerSizeShown = !powerSizeShown">
-          <u class="flex">Power size 
-            <ChevronDownIcon class="w-6" v-if="!powerSizeShown"/>
-            <ChevronUpIcon class="w-6" v-else/>
-          </u>
-        </label>
-        <div class="border rounded-md p-2 h-40 flex flex-col" v-if="powerSizeShown">
-          <ul class="w-full steps">
-            <li v-for="(size, six) in powerSizes" :key="six"
-              :data-content="size.id" :class="['step cursor-pointer', powerSize >= six ? 'step-' + powerStepColor : '']" @click="powerSize = six">{{ size.name }}</li> 
-          </ul>
-          <div :class="'grow flex flex-col justify-between prose text-center text-' + powerStepColor">
-            <div><small>{{ powerSizes[powerSize].description }}</small></div>
-            <div class="flex flex-row gap-2 justify-end">
-              <div class="flex flex-row gap-2">
-                <CogIcon class="w-6" />
-                <small>{{ powerSizes[powerSize].image }} / {{ powerSizes[powerSize].provider }}</small>
-              </div>
-              <div class="flex flex-row gap-2">
-                <ClockIcon class="w-6" />
-                <small>{{ powerSizes[powerSize].timeout }}</small>
+        <div v-if="!newTemplate">
+          <label class="label cursor-pointer" @click="powerSizeShown = !powerSizeShown">
+            <u class="flex">Power size 
+              <ChevronDownIcon class="w-6" v-if="!powerSizeShown"/>
+              <ChevronUpIcon class="w-6" v-else/>
+            </u>
+          </label>
+          <div class="border rounded-md p-2 h-40 flex flex-col" v-if="powerSizeShown">
+            <ul class="w-full steps">
+              <li v-for="(size, six) in powerSizes" :key="six"
+                :data-content="size.id" :class="['step cursor-pointer', powerSize >= six ? 'step-' + powerStepColor : '']" @click="powerSize = six">{{ size.name }}</li> 
+            </ul>
+            <div :class="'grow flex flex-col justify-between prose text-center text-' + powerStepColor">
+              <div><small>{{ powerSizes[powerSize].description }}</small></div>
+              <div class="flex flex-row gap-2 justify-end">
+                <div class="flex flex-row gap-2">
+                  <CogIcon class="w-6" />
+                  <small>{{ powerSizes[powerSize].image }} / {{ powerSizes[powerSize].provider }}</small>
+                </div>
+                <div class="flex flex-row gap-2">
+                  <ClockIcon class="w-6" />
+                  <small>{{ powerSizes[powerSize].timeout }}</small>
+                </div>
               </div>
             </div>
           </div>
@@ -99,7 +100,7 @@ export default {
     AvatarSelect,
     Dialog,
   },
-  props: ['clinicTemplates'],
+  props: ['clinicTemplates', 'newTemplate'],
   data () {
     return {
       loading: false,

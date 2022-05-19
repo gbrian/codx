@@ -8,6 +8,8 @@ import Notifications from 'notiwind'
 import VueMobileDetection from "vue-mobile-detection"
 import Markdown from 'vue3-markdown-it'
 
+import FontAwesomeIcon from '@/assets/fontawesome'
+
 const app = createApp(App)
   .use(Vuex)
   .use(store)
@@ -15,6 +17,7 @@ const app = createApp(App)
   .use(Notifications)
   .use(VueMobileDetection)
   .use(Markdown)
+  .component("FontAwesomeIcon", FontAwesomeIcon)
   .mount("#app");
 
 store.app = app;

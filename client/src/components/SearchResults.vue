@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col" v-if="search">
-    <div class="navbar mb-2 shadow-lg">
-      <div class="px-2 mx-2 flex-1">
+    <div class="navbar mb-2 shadow-lg w-full flex flex-row justify-between">
+      <div class="px-2 mx-2n">
         <div><span class="text-lg font-bold">{{ search.topic }}</span></div>
       </div>
     </div>
@@ -31,28 +31,18 @@
         </div>
       </div>
     </div>
-    <div class="m-2 shadow-lg flex flex-col" v-if="true">
-      <div class="p-2 flex" v-if="runningClinics">
-        <TerminalIcon class="w-8 mr-2" />
-        <div class="prose">
-          <h3>Running clinics</h3>
-        </div>
-      </div>
-      <OpenClinics class="p-2" v-if="runningClinics"
-        @join-clinic="clinic => $emit('join-clinic', clinic)"
-        @delete-clinic="clinic => deleteClinic = clinic"
-      />
-    </div>
-
 
     <div class="my-2" v-if="searchString"><i>results for: {{ searchString }}</i></div>
 
     <div class="p-2 grid grid-cols-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
-      <div class="card rounded h-80 mr-4 cursor-pointer"
+      <div class="card rounded-sm h-80 mr-4 cursor-pointer"
         v-for="(result, ix) in results" :key="ix"
       >
-        <div @click="resultDialog = result" :class="[ result.selected ? 'online border bg-red': '']">
-          <div class="h-36 carousel rounded-box relative"
+        <div @click="resultDialog = result" :class="[ 'relative', result.selected ? 'online border bg-red': '']">
+          <div :class="['badge absolute top-1 left-1 z-10',
+          result.sponsor?.id ? 'bg-primary text-primary-content' : ''
+          ]"><strong>{{ result.name }}</strong></div>
+          <div class="h-36 carousel rounded-sm relative"
             @mouseover="carrouselMe(result)"
             @mouseout="carrouselMe(null)"
           >
@@ -65,10 +55,10 @@
           </div>
           <div class="p-2 w-full text-base-content">
             <div class="flex flex-row w-full">
-              <Avatar size="8" :url="result.user.avatar" />
+              <Avatar size="8" :url="result.user?.avatar" />
               <div class="ml-4 flex flex-col w-full">
                 <div class="flex flex-row justify-between w-full">
-                  <strong>{{ `@${result.user.username}` }}</strong>
+                  <strong>{{ `@${result.user?.username}` }}</strong>
                   <div class="flex flex-row mr-2">
                     <ThumbUpIcon class="w-4" /> {{ result.likeCount }}
                     <ThumbDownIcon class="ml-2 w-4" /> {{ result.dislikeCount }}
@@ -94,10 +84,11 @@
       </div> 
     </div>
     <NewCodingClinicDialog
-      v-if="newCodingClinic"
+      v-if="newCodingClinic || newTemplate"
       :clinicTemplates="clinicTemplates"
+      :newTemplate="newTemplate"
       @ok="onNewCodingClinic"
-      @cancel="newCodingClinic = false"
+      @cancel="newTemplate = newCodingClinic = false"
     />
     <CodingClinicTemplate
       @close="resultDialog = null"
@@ -105,12 +96,6 @@
       v-if="resultDialog"
       :template="resultDialog"
       :media="getResultMedia(resultDialog)"
-    />
-    <DeleteClinicDialog
-      :clinic="deleteClinic"
-      @ok="onDeleteClinic"
-      @cancel="deleteClinic = null"
-      v-if="deleteClinic"
     />
   </div>
 </template>
@@ -126,13 +111,12 @@ import {
   AcademicCapIcon,
   BeakerIcon,
   CodeIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  PlusIcon
 } from '@heroicons/vue/outline'
 import Avatar from '@/components/Avatar.vue'
 import NewCodingClinicDialog from '@/components/NewCodingClinicDialog.vue'
 import CodingClinicTemplate from '@/components/CodingClinicTemplate.vue'
-import OpenClinics from '@/components/OpenClinics.vue'
-import DeleteClinicDialog from '@/components/DeleteClinicDialog.vue'
 export default {
   components: {
     ThumbUpIcon,
@@ -146,15 +130,15 @@ export default {
     BeakerIcon,
     CodeIcon,
     CurrencyDollarIcon,
+    PlusIcon,
     Avatar,
     NewCodingClinicDialog,
-    CodingClinicTemplate,
-    OpenClinics,
-    DeleteClinicDialog
+    CodingClinicTemplate
   },
   data () {
     return {
       newCodingClinic: false,
+      newTemplate: false,
       labelColors: [
         'primary',
         'secondary',
@@ -167,7 +151,6 @@ export default {
       carrouselMeTarget: null,
       slidInterval: null,
       clinicTemplates: null,
-      deleteClinic: null,
       runClinicName: this.$route.params.runClinicName,
       code: this.$route.query.code
     }
@@ -196,9 +179,6 @@ export default {
       const { search: { query: { q } = {}} } = this
       return q
     },
-    runningClinics () {
-      return !!this.$storex.clinic.clinics?.length
-    },
     results () {
       return this.search.results.sort(r => r.selected ? -1 : 1)
     }
@@ -206,6 +186,7 @@ export default {
   methods: {
     async onNewCodingClinic (settings) {
       this.$emit('new-clinic', settings)
+      this.newTemplate = false
     },
     getResultMediaVideos (result) {
       return this.getResultMedia({
@@ -253,10 +234,6 @@ export default {
     newBlankClinic () {
       this.clinicTemplates = null
       this.newCodingClinic = true
-    },
-    onDeleteClinic () {
-      this.$emit('delete-clinic', this.deleteClinic)
-      this.deleteClinic = null
     },
     priceIndex (price) {
       return parseInt((price || 100) / 500) + 1

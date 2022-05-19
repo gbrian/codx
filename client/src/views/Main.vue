@@ -21,9 +21,9 @@
         @open-channel="onOpenChannel"
         @new-chat="onNewChat"
         @task-manager="onTaskManager"
+        @home="goHome"
         @calendar="() => toggleSideBar('calendar')"
       />
-      <Profile v-if="profileVisible" :user="profileUser"/>
       <UserCalendar class="w-full" v-if="calendarVisible"/>
       <InviteBtn v-if="false" />
     </div>
@@ -35,6 +35,10 @@
       v-if="showCodingClinics"
       class="h-full w-full"
       @new-clinic="onResultsNewCodingClinic"
+    />
+    <SearchOpenClinics
+      v-if="showOpenClinics"
+      class="h-full w-full"
       @join-clinic="joinClinic"
       @delete-clinic="deleteClinic"
     />
@@ -43,8 +47,9 @@
       class="h-full w-full"
       :channel="$storex.channel.currentChannel"
     />
-    <div class="lg:flex flex-col w-full bg-base-200" v-if="splittedView">
-      <CodxAcademyHero v-if="hero === 'welcome'" @close="hero = null" />
+    <CodxAcademyHero class="academy-hero" v-if="showWelcome" @close="hero = null" />
+    <Profile class="profile w-full h-full p-4" v-if="isProfile" />
+    <div class="splittedView lg:flex flex-col w-full bg-base-200" v-if="splittedView">
       <Header
           class="bg-neutral"
           :chat="$storex.chat.openedChat"
@@ -101,12 +106,13 @@
 <script>
 import SideBar from "@/components/SideBar.vue"
 import ChatBox from "@/components/chat/ChatBox.vue"
-import Profile from "@/components/Profile.vue"
+import Profile from "@/components/profile/Profile.vue"
 import ChatList from "@/views/ChatList.vue"
 import Explorer from "@/views/Explorer.vue"
 import VideoCall from "@/views/VideoCall.vue"
 import Header from "@/components/header/Header.vue"
 import SearchResults from "@/components/SearchResults.vue"
+import SearchOpenClinics from "@/components/SearchOpenClinics.vue"
 import NewCodingClinicDialog from '@/components/NewCodingClinicDialog.vue'
 import NekoRoom from '@/components/NekoRoom.vue'
 import LoadingDialog from '@/components/LoadingDialog.vue'
@@ -126,6 +132,7 @@ export default {
     VideoCall,
     Header,
     SearchResults,
+    SearchOpenClinics,
     NewCodingClinicDialog,
     NekoRoom,
     LoadingDialog,
@@ -143,6 +150,7 @@ export default {
       list: [{}, {}],
       sideBar: 'explorer',
       showCodingClinics: true,
+      showOpenClinics: false,
       showCodingClinicDialog: false,
       chatHidden: false,
       videoHidden: false,
@@ -182,9 +190,6 @@ export default {
     explorerVisible () {
       return this.sideBar === 'explorer'
     },
-    profileVisible () {
-      return this.sideBar === 'profile'
-    },
     calendarVisible () {
       return this.sideBar === 'calendar'
     },
@@ -198,13 +203,13 @@ export default {
       return this.$storex.channel.currentChannel
     },
     showHeader () {
-      return !this.showCodingClinics && !this.showChannel && (!this.taskManager || this.chatVisible) 
+      return !this.showCodingClinics && !this.showChannel && (!this.taskManager || this.chatVisible) && !this.showOpenClinics
     },
     currentCompnay () {
       return this.$storex.company.currentCompnay
     },
     splittedView () {
-      return !this.showCodingClinics && !this.showChannel && (!this.taskManager || this.chatVisible) || this.hero
+      return !this.showWelcome && !this.showCodingClinics && !this.showOpenClinics && !this.showChannel && (!this.taskManager || this.chatVisible)
     },
     videoCall () {
       return this.$storex.call.currentCall
@@ -219,7 +224,13 @@ export default {
       if (this.$root.isMobile && (this.chatVisible || this.videoCallVisible || this.currentClinic)) {
         return false
       }
-      return this.explorerVisible || this.profileVisible || this.calendarVisible
+      return this.explorerVisible || this.calendarVisible
+    },
+    isProfile () {
+      return this.$route.path.indexOf("/profile/") !== -1
+    },
+    showWelcome () {
+      return this.hero === 'welcome' && !this.isProfile
     }
   },
   methods: {
@@ -228,9 +239,6 @@ export default {
     },
     toggleSideBar (view) {
       this.sideBar = view
-      if (view === 'profile') {
-        this.profileUser = this.$storex.user.user
-      }
     },
     async resetView (options) {
       const { keepChat } = options||{}
@@ -241,6 +249,7 @@ export default {
       }
       await this.$storex.channel.setCurrentChannel()
       this.showCodingClinics = false
+      this.showOpenClinics = false
       this.$router.push('/')
     },
     goHome () {
@@ -265,12 +274,12 @@ export default {
       this.$storex.channel.openChannel(channel)
     },
     async onAcademyCourses () {
-      this.resetView()
+      await this.resetView()
       this.showCodingClinics = await this.$storex.search.academyCourses()
     },
     async onCodingClinics () {
-      this.resetView()
-      this.showCodingClinics = await this.$storex.search.codingClinics()
+      await this.resetView()
+      this.showOpenClinics = true
     },
     async onNewChat (chatSettings) {
       if (!this.$root.login()) return

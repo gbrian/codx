@@ -8,6 +8,11 @@
     "build:neko-lib": "vue-cli-service build --target lib --name neko-lib '../neko/client/src/lib.ts'"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
+    "@fortawesome/free-regular-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
     "@headlessui/vue": "^1.4.3",
     "@heroicons/vue": "^1.0.5",
     "@tailwindcss/typography": "^0.5.0",
@@ -27,6 +32,7 @@
     "vue-hooks-form": "^0.2.2",
     "vue-mobile-detection": "^2.0.1",
     "vue-router": "^4.0.12",
+    "vue3-calendar-heatmap": "^2.0.0",
     "vue3-markdown-it": "^1.0.10",
     "vuex": "^4.0.2"
   },

@@ -10,10 +10,19 @@
         </span>
       </label>
     </div>
+  
+    <div
+      :class="['text-base pl-3 cursor-pointer mb-2 mt-6', searchType === 'clinic' ? 'font-bold' : '']"
+      @click="$emit('home')"
+      v-if="false"
+    >
+      <HomeIcon class="h-5 w-5 float-left mr-2" />
+      Home
+    </div>
 
     <div
-      :class="['text-base pl-3 cursor-pointer mb-2 flex btn btn-outline btn-accent', searchType === 'academy' ? 'font-bold' : '']"
-      @click="$emit('acamedy-courses')"
+      :class="['text-accent pl-3 cursor-pointer flex', searchType === 'academy' ? 'font-bold' : '']"
+      @click="$emit('academy-courses')"
     >
       <AcademicCapIcon class="h-6 mr-2" />
       <div>codx academy</div>
@@ -25,7 +34,7 @@
     </div>
 
     <div
-      :class="['text-base pl-3 cursor-pointer mb-2 mt-6', searchType === 'clinic' ? 'font-bold' : '']"
+      :class="['text-base pl-3 cursor-pointer mb-2 mt-2', searchType === 'clinic' ? 'font-bold' : '']"
       @click="$emit('coding-clinics')"
     >
       <TerminalIcon class="h-5 w-5 float-left mr-2" />
@@ -137,7 +146,8 @@ import {
   CalendarIcon,
   AcademicCapIcon,
   CreditCardIcon,
-  SearchIcon
+  SearchIcon,
+  HomeIcon
 } from '@heroicons/vue/outline'
 import Dialog from '@/components/Dialog.vue'
 import LoadingDialog from '@/components/LoadingDialog.vue'
@@ -146,6 +156,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Share from '@/components/Share.vue'
 export default {
   components: {
+    HomeIcon,
     TerminalIcon,
     AtSymbolIcon,
     ChevronDownIcon,

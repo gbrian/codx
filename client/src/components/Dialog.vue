@@ -22,7 +22,7 @@
                   <DialogTitle as="h3" class="text-lg leading-6 font-medium text-accent-900">
                     {{ title }}
                   </DialogTitle>
-                  <div class="mt-2 w-full">
+                  <div class="w-full">
                     <div class="text-sm text-primary-500 w-full">
                       <slot>
                       </slot>

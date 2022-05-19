@@ -2,7 +2,7 @@
   <div class="h-screen overflow-y-auto">
     <Notifications />
     <router-view />
-    <Audio :audio="audio" />
+    <Audio :audio="audio" v-if="false"/>
   </div>
 </template>
 <script>

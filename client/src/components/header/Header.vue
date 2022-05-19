@@ -86,7 +86,7 @@
       <ClinicControls class="flex space-x-2 p-2 border rounded-md"
         :clinic="clinic || chat?.clinic"
         :liveClinic="liveClinic"
-        @full-screen="$emit('full-screen')"
+        @clinic-fullScreen="$emit('clinic-fullScreen')"
         @toggle-clinic="toggleClinic"
       />
     </div>

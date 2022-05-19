@@ -46,7 +46,7 @@ function prepareChat (chat, { visible }) {
       return unread.length ? unread : null
     },
     get missingMention () {
-      return !!(this.unreadMessages||[]).filter(({ content }) => content.indexOf(mention) !== -1).length
+      return false // !!(this.unreadMessages||[]).filter(({ content }) => content.indexOf(mention) !== -1).length
     },
     get lastView () {
       return (this.readReceipt||{})[me.id] || this.createdAt
@@ -55,7 +55,7 @@ function prepareChat (chat, { visible }) {
       return this.admins.filter(a => a.id === me.id).length !== 0
     },
     get chatName () {
-      return this.name || this.users.filter(({ username }) => me.username !== username)
+      return this.name || this.users
         .map(({ username }) => '@'+username).join("-")
     }
   }

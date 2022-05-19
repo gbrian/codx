@@ -55,6 +55,16 @@ const routes = [
     path: "/clinic/run/:runClinicName",
     name: "RunClinic",
     component: () => import("../views/Main.vue"),
+  },
+  {
+    path: "/profile/:organization",
+    name: "OrgProfile",
+    component: () => import("../views/Main.vue"),
+  },
+  {
+    path: "/profile/@:username",
+    name: "UserProfile",
+    component: () => import("../views/Main.vue"),
   }
 ];
 

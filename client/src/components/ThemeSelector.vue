@@ -1,5 +1,8 @@
 <template>
  <div class="text-primary">
+   <label class="label">
+      <span class="label-text">Theme</span>
+    </label>
    <select
     v-model="key"
     class="select select-bordered w-full max-w-xs"

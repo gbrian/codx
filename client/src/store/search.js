@@ -24,7 +24,7 @@ export const actions = actionTree(
     init () {
     },
     async doSearch (ctx, query = {}) {
-      const { data: { results } } = await api.search(query)
+      const { data: results } = await api.search(query)
       $storex.search.setCurrentSearch({
         query,
         results

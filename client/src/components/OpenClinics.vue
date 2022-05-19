@@ -1,7 +1,7 @@
 <template>
   <div class="clinic-list">
-    <div class="flex flex-row gap-4 mt-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
-      <div class="relative grow h-32 px-2 py-1 border rounded-md flex flex-col justify-between bg-base-100 border-accent-focus drop-shadow-lg"
+    <div class="grid grid-rows-2 grid-flow-col gap-4 p-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
+      <div class="relative px-2 py-1 border rounded-md flex flex-col justify-between bg-base-100 border-accent-focus drop-shadow-lg"
         v-for="(clinic, cix) in orderedClinics" :key="cix"
       >
         <div class="grow">
@@ -31,7 +31,7 @@
             <TerminalIcon class="w-4" /> Join
           </button>
           <button class="btn btn-xs btn-outline btn-error gap-2"
-            @click="$emit('delete-clinic', clinic)"
+            @click="deleteClinic = clinic"
             v-if="true || clinic.canDelete"
           >
             <TrashIcon class="w-4" />
@@ -40,6 +40,12 @@
         <small>{{ clinic.provider }}</small>
       </div>
     </div>
+    <DeleteClinicDialog
+      :clinic="deleteClinic"
+      @ok="onDeleteClinic"
+      @cancel="deleteClinic = null"
+      v-if="deleteClinic"
+    />
   </div>
 </template>
 <script>
@@ -52,6 +58,7 @@ import {
 } from "@heroicons/vue/outline"
 import moment from 'moment'
 import UserAvatar from '@/components/UserAvatar.vue'
+import DeleteClinicDialog from '@/components/DeleteClinicDialog.vue'
 export default {
   components: {
     TerminalIcon,
@@ -59,16 +66,20 @@ export default {
     PencilIcon,
     XCircleIcon,
     SaveIcon,
-    UserAvatar
+    UserAvatar,
+    DeleteClinicDialog
   },
+  props: ['head'],
   data () {
     return {
-      editClinic: false
+      editClinic: false,
+      deleteClinic: null
     }
   },
   computed: {
     clinics () {
-      return this.$storex.clinic.clinics
+      const { head } = this
+      return this.$storex.clinic.clinics.slice(0, parseInt(head || 10000))
     },
     me () {
       return this.$storex.user.user
@@ -88,6 +99,10 @@ export default {
     },
     clinicCreationData (clinic) {
       return moment(clinic.createdAt).fromNow()
+    },
+    onDeleteClinic () {
+      this.$emit('delete-clinic', this.deleteClinic)
+      this.deleteClinic = null
     }
   }
 }
