@@ -74,11 +74,17 @@
             </div>
             <input
               v-model="password"
-              type="password"
+              :type="pwdVisible ? 'text' : 'password'"
               class="block w-full md:px-4 px-3 md:py-3 py-2.5 placeholder-gray-200 focus:outline-none sm:text-base text-sm border-gray-300 bg-transparent font-medium"
               v-on:keyup.enter="submit"
               placeholder="Enter your password"
             />
+            <div
+              class="md:w-14 w-10 md:h-12 h-10 px-3 flex items-center justify-center"
+            >
+              <EyeOffIcon class="cursor-pointer w-5 " @click="pwdVisible = true" v-if="!pwdVisible"/>
+              <EyeIcon class="cursor-pointer w-5 " @click="pwdVisible = false" v-else/>
+            </div>
           </div>
           <span v-if="errorPassword" class="pt-1 block text-sm text-red-400">{{
             errorPassword
@@ -126,19 +132,27 @@
 </template>
 
 <script>
-import { MailIcon, LockClosedIcon } from "@heroicons/vue/outline";
+import {
+  MailIcon,
+  LockClosedIcon,
+  EyeIcon,
+  EyeOffIcon
+ } from "@heroicons/vue/outline";
 
 export default {
   components: {
     MailIcon,
     LockClosedIcon,
+    EyeIcon,
+    EyeOffIcon
   },
   data () {
     return {
       identifier: null,
       password: null,
       errorIdentifier: null,
-      errorPassword: null
+      errorPassword: null,
+      pwdVisible: false
     }
   },
   async created () {

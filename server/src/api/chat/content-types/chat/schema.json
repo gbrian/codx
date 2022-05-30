@@ -12,10 +12,10 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "roomId": {
+    "name": {
       "type": "string"
     },
-    "name": {
+    "roomId": {
       "type": "string"
     },
     "admins": {

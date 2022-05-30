@@ -65,7 +65,9 @@ export default {
     },
     chatMessages () {
       const now = moment()
-      return this.chat.messages.filter(({ createdAt, extra }) => !extra || now.diff(createdAt, 'hours') < 1 )
+      const { chat: { messages } } = this
+      const noOldEventsMessages = messages.filter(({ createdAt, extra }) => !extra || now.diff(createdAt, 'hours') < 1 )
+      return noOldEventsMessages
     },
     dayMessages () {
       !this.hasScrolled && requestAnimationFrame(this.scrollToBottom.bind(this))

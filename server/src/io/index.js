@@ -5,6 +5,7 @@ const codx = require('../codx')
 
 class ioManager {
   users = {}
+  sockets = {}
   constructor(strapi) {
     this.strapi = strapi
     this.codx = codx(strapi)
@@ -48,13 +49,11 @@ class ioManager {
         this.onConnection(socket)
       })
     this.rooms = {}
-    this.sockets = []
   }
 
   onConnection(socket) {
     // Say hi
     try {
-      socket.emit("welcome", null, user => session.newUser({ ...user, socket }))
       socket.on('heartbeat', user => this.onHeartBeat({ ...user, socket }))
       socket.on('log', event => this.onLog(event))
       this.onNewConnectionClinicEvents(socket)
@@ -91,15 +90,38 @@ class ioManager {
     })
   }
 
-  onHeartBeat (user) {
+  async onHeartBeat (user) {
     const { socket } = user
+    this.sockets[socket.id] = {
+      id: socket.id,
+      socket,
+      user
+    }
+    const lastOnline = new Date()
+    if (!this.users[user.id]) {
+      user.statistics = await this.codx.user.updateUserStatistics(user.id, {
+        lastOnline
+      })
+    }
     this.users[user.id] = {
       ...user,
-      lastOnline: new Date()
+      lastOnline
     }
     this.refreshUsers([user])
-    this.offlineUserIds.forEach(id => delete this.users[id])
+    this.offlineUserIds.forEach(id => {
+      delete this.users[id]
+      this.userSockets({ id })
+          .forEach(id => delete this.sockets[id])
+    })
   }
+
+  userSockets ({ id }) {
+    const { sockets } = this
+    return  Object.values(sockets)
+              .filter(socket => socket.user.id === id)
+              .map(({ socket }) => socket)
+  }
+
   onLog ({user, log}) {
     console.log("user-log", { user, log })
   }
@@ -111,13 +133,15 @@ class ioManager {
         userIds = Object.keys(this.onlineUsers)
       } 
       const users = userIds.map(id => this.onlineUsers[id]).filter(u => !!u)
-      users.forEach(u => {
+      users.forEach(user => {
         try {
-          u.socket.emit(event, data, (...args) => {
-            console.log("io", "user ack", { id: u.id, args });
-          })
+          this.userSockets(user).forEach(socket => 
+            socket.emit(event, data, (...args) => {
+                console.log("io", "user ack", { id: user.id, args });
+              })
+          )
         } catch (ex) {
-          console.error("io", "Error emmiting to user", { id: u.id, event, ex })
+          console.error("io", "Error emmiting to user", { id: user.id, event, ex })
         }
       })
     } catch (ex) {
@@ -127,13 +151,14 @@ class ioManager {
 
   refreshUsers (users) {
     users.forEach(async user => {
-      try {
-        const { socket } = user
-        const data = await this.session.status(user)
-        socket.emit('heartbeat', data)
-      } catch (ex) {
-        console.error("heartbeat", ex)
-      }
+      this.userSockets(user).forEach(async socket => { 
+        try {
+          const data = await this.session.status(user)
+          socket.emit('heartbeat', data)
+        } catch (ex) {
+          console.error("heartbeat", ex)
+        }
+      })
     })
   }
 }

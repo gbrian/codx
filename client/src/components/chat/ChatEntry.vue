@@ -22,8 +22,9 @@
                   menuItemClass="-left-2 -mt-1"
                   imgClass="w-5 transform rotate-90"
                   @edit-message="$emit('edit-message', entry)"
+                   @copy-message="copyMessage(entry)"
                 >
-                  <ChatText :content="formatMessage(entry)" />
+                  <ChatText :content="formatMessage(entry)" :isHtml="isHtml"/>
                 </MessageOptions>
               </div>
             </div>
@@ -64,8 +65,9 @@
                   menuItemClass="-left-2 -mt-1"
                   imgClass="w-5 transform rotate-90"
                   @edit-message="$emit('edit-message', entry)"
+                  @copy-message="copyMessage(entry)"
                 >
-                  <ChatText :content="formatMessage(entry)" />
+                  <ChatText :content="formatMessage(entry)" :isHtml="isHtml"/>
                 </MessageOptions>
               </div>
             </div>
@@ -87,7 +89,7 @@ import {
   ClockIcon,
   EmojiHappyIcon
 } from "@heroicons/vue/outline";
-import MessageOptions from '../MessageOptions.vue'
+import MessageOptions from '@/components/chat/MessageOptions.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ChatText from '@/components/chat/ChatText.vue'
 
@@ -100,12 +102,24 @@ export default {
     ChatText
   },
   props: ['isMe', 'message'],
+  data () {
+    return {
+      isHtml: true
+    }
+  },
   methods: {
     formatMessage (message) {
       return `${message.content}${message.edited ? ' *' : ''}`
     },
     formatTime (message) {
       return moment(message.createdAt).format("hh:mm")
+    },
+    copyMessage (message) {
+      const clipboardData =
+        window.clipboardData ||
+        navigator.clipboard;
+      clipboardData.writeText(message.content)
+      this.$storex.user.notify("Copied!")
     }
   }
 }

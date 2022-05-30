@@ -1,0 +1,8 @@
+FROM codx/room:latest
+
+RUN apt-get update \
+ && apt-get install -y xcompmgr cairo-dock
+
+COPY --chown=codx firefox/admin/policies.json /usr/lib/firefox/distribution/policies.json
+COPY --chown=codx firefox/admin/neko.js /usr/lib/firefox/mozilla.cfg
+COPY --chown=codx openbox/admin/openbox.xml /etc/neko/openbox.xml

@@ -55,9 +55,12 @@ module.exports = strapi => {
       })
       return users[0]
     },
+    async findUser (id) {
+      return strapi.$query("users-permissions.user").findOne(id)
+    },
     async me (params) {
       const { id } = params
-      const sme = await strapi.$query("users-permissions.user").findOne(id)
+      const sme = await this.findUser(id)
       const network = await this.network(sme)
       const guestChats = await strapi.$query('chat').findMany({ 
         filters: { guests: [sme.id] },
@@ -77,6 +80,9 @@ module.exports = strapi => {
                               .map(({ chat_message: { chat: { id } } = { chat: {} } }) => id ))
                           .reduce((a, b) => a.concat(b), [])
       const chats = [...guestChats, ...adminChats].map(c => ({ ...c, isChannel: channelChats.indexOf(c.id) !== -1 }))
+      const activity = await strapi.$query('user-activity').findMany({ 
+        filters: { user: id }
+      })
       return {
         ...this.filteredUser(sme),
         roomId: `@${sme.username}`,
@@ -87,8 +93,17 @@ module.exports = strapi => {
         channels,
         clinics,
         companies,
-        credits: sme.credits
+        credits: sme.credits,
+        statistics: sme.statistics,
+        activity,
+        contentCreator: sme.contentCreator
       }
+    },
+    async updateUserStatistics (userId, data) {
+      const { statistics: currentStatistics } = await this.findUser(userId)
+      const statistics = Object.assign(currentStatistics ||  {}, data)
+      await strapi.$query("users-permissions.user").update(userId, { data: { statistics } })
+      return statistics
     }
   }
 }

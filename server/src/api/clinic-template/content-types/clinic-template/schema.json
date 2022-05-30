@@ -12,6 +12,9 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string"
+    },
     "repository": {
       "type": "string"
     },
@@ -51,9 +54,6 @@
       "type": "json"
     },
     "readme": {
-      "type": "string"
-    },
-    "name": {
       "type": "string"
     },
     "creditsHour": {

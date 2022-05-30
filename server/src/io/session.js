@@ -2,7 +2,8 @@ module.exports = strapi => {
   return {
     async status (user) {
       return {
-        network: this.network(user)
+        network: this.network(user),
+        statistics: user.statistics
       }
     },
     network (user) {

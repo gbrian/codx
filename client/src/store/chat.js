@@ -1,6 +1,7 @@
 import { getterTree, mutationTree, actionTree } from 'typed-vuex'
 import api from '@/api'
 import { $storex } from '.'
+import moment from 'moment'
 
 export const namespaced = true
 
@@ -26,7 +27,7 @@ function prepareChat (chat, { visible }) {
   const { id, admins = [], guests = [], messages = [] } = chat
   messages.forEach(m => {
     m.from = $storex.network.allUsers[m.from.id]
-    m.createdAt = Date.parse(m.createdAt)
+    m.createdAt = moment(m.createdAt)
   })
   const me = $storex.user.user
   const mention = `@${me.username}`
@@ -99,14 +100,14 @@ export const mutations = mutationTree(state, {
       ...state.chats[chatId],
       messages: JSON.parse(JSON.stringify(messages))
     })
-    if (state.openedChat && id === state.openedChat.id) {
+    if (chatId === state.openedChat?.id) {
       if (!state.openedChat.visible) {
         this.app.$notify({
           text: $storex.chat.formatMessage(newMessage),
           group: "success"
         }, 2000);
       }
-      state.openedChat = state.chats[id]
+      state.openedChat = state.chats[chatId]
     }
   },
   async deleteChat (state, chat) {

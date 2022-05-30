@@ -87,11 +87,21 @@
       "target": "api::channel.channel",
       "inversedBy": "users"
     },
-    "profiles": {
+    "statistics": {
       "type": "json"
     },
     "credits": {
       "type": "integer"
+    },
+    "activity": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::user-activity.user-activity",
+      "inversedBy": "user"
+    },
+    "contentCreator": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

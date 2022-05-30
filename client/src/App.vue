@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen overflow-y-auto">
-    <Notifications />
+    <Notifications class="z-1000"/>
     <router-view />
     <Audio :audio="audio" v-if="false"/>
   </div>
@@ -17,7 +17,7 @@ export default {
   data () {
     return {
       doLogin: false,
-      currentTheme: localStorage.getItem("theme"),
+      currentTheme: localStorage.getItem("theme") || 'dark',
       audio: null
     }
   },

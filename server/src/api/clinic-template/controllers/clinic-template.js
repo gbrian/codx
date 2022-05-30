@@ -8,6 +8,6 @@
 
 module.exports = createCoreController('api::clinic-template.clinic-template', ({ strapi }) => ({
   async find () {
-    return await strapi.$api('clinic-template').find({ populate: { user: true } })
+    return await strapi.$query('clinic-template').findMany({ populate: { user: true, sponsor: true } })
   }
 }));
