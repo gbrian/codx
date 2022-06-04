@@ -136,6 +136,8 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=$GITHUB_EMAIL"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${WEB_DOMAIN}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${WEB_DOMAIN}"
     ports:
       - "443:443"
       - "8800:8080"
@@ -143,6 +145,7 @@ services:
       - "$CODX_PATH/docker/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - $CODX_PATH/docker/auth:/auth
+    restart: unless-stopped
 
 networks:
   default:

@@ -36,8 +36,11 @@ export const actions = actionTree(
         setTimeout(() =>  $storex.clinic.init(), 1000)
       }
     },
-    async newCodingClinic({ state }, clinicSettings) {
-      const { data: clinic } = await api.createClinic(clinicSettings)
+    async newCodingClinic({ state }, { chat, settings }) {
+      const { data: clinic } = await api.createClinic({
+        chat: { id: chat.id },
+        settings
+      })
       $storex.clinic.addClinic(clinic)
       const { id } = clinic
       $storex.clinic.setCurrentClinic(id)

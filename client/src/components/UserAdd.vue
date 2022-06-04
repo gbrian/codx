@@ -73,7 +73,7 @@ export default {
       return friendList
               .filter(u => isFilter ? (u.username.toLowerCase().indexOf(userFilter.toLowerCase()) !== -1) : true)
               .sort(u => u.online ? -1 : 1)
-              .slice(page, 5)
+              .slice(page, page + 5)
     },
     visible () {
       return this.onlineFriends.length !== 0

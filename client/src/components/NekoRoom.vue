@@ -106,7 +106,7 @@ export default {
             background-color: transparent !important;
           }
           video {
-            filter: brightness(0.9)
+            filter: brightness(1)
           }
           .user-layer {
             position: absolute;

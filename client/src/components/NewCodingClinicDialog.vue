@@ -112,7 +112,6 @@ export default {
       powerSizeShown: false,
       templates: this.$props.clinicTemplates || [
         {
-          image: "",
           title: "Blank",
           description: "Empty project...",
           tags: ['nodejs', 'python', 'java'],
@@ -122,9 +121,9 @@ export default {
           credits: 100
         },
         {
-          image: "",
-          title: "Web",
-          description: "Web APP project.",
+          image: "codx/desktop:latest",
+          title: "Desktop",
+          description: "Desktop mode enabled.",
           tags: ['js', 'vue', 'react'],
           media: [
             { type: 'image', url: '/logo.png' }
@@ -132,7 +131,6 @@ export default {
           credits: 200
         },
         {
-          image: "",
           title: "Data ML/AI",
           description: "Data anlysis project.",
           tags: ['jupyter-lab', 'tensorflow', 'conda', 'pytorch'],
@@ -199,11 +197,16 @@ export default {
   methods: {
     onOk () {
       this.loading = true
+      const roomSettings = this.powerSizes[this.powerSize]
+      const template = this.templates[this.template]
+      if (template.image) {
+        roomSettings.image = template.image
+      }
       const settings = {
         name: this.name,
         description: this.description,
-        template: this.templates[this.template],
-        roomSettings: this.powerSizes[this.powerSize]
+        template,
+        roomSettings
       }
       this.$emit('ok', settings)
     },

@@ -5,7 +5,7 @@ const uuid = require('uuid').v4;
 module.exports = strapi => {
   const domain = process.env.WEB_DOMAIN
   return {
-    createTraefikConfigurationService ({ prefix, serviceUrl, isRemote, host, protocol }) {
+    createTraefikConfigurationService ({ useSubdomain = false, prefix, serviceUrl, isRemote, host, protocol }) {
       const pathPrefix = `/${prefix}`
       const middlewares = {
         [`codx-room-${prefix}rdr`]: {
@@ -50,7 +50,7 @@ module.exports = strapi => {
           ],
           middlewares: middlewaresIds,
           service: `codx-room-${prefix}`,
-          rule: `PathPrefix(\`${pathPrefix}\`) && Host(\`${host || domain}\`)`,
+          rule: useSubdomain ? `Host(\`${pathPrefix.substring(1, pathPrefix.length)}-${host || domain}\`)` : `PathPrefix(\`${pathPrefix}\`) && Host(\`${host || domain}\`)`,
           tls: {
             "certResolver": process.env.PROXY_TLS_RESOLVER || "myresolver"
           }

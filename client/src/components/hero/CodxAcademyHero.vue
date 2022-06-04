@@ -8,8 +8,8 @@
 export default {
   computed: {
     url () {
-      const { CMS_DOMAIN } = process.env
-      return CMS_DOMAIN ? `https://${CMS_DOMAIN}` : '/landing/index.html'
+      const { CODX_LANDING } = process.env
+      return CODX_LANDING || 'https://wodx.meetnav.com/howitworks'
     }
   }
 }

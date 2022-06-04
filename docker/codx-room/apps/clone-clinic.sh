@@ -3,12 +3,15 @@ set -x
 if [ -z "$GIT_REPO_PROJECT" ]; then
   exit 0
 fi
+DIR=$(echo $GIT_REPO_PROJECT | grep -o '[^/]*$')
+if [ -d "$DIR" ]; then
+  exit 0
+fi
 cd $CODX_HOME
 if [ -z "$GIT_REPO_FOLDER" ]; then
   git clone --depth 1 --branch ${GIT_REPO_BRANCH:-main} $GIT_REPO_PROJECT
 else 
   FOLDER=${GIT_REPO_FOLDER}
-  DIR=$(echo $GIT_REPO_PROJECT | grep -o '[^/]*$')
   mkdir $DIR
   cd $DIR
   git init
