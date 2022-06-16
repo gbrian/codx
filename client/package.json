@@ -29,12 +29,14 @@
     "theme-change": "^2.0.2",
     "typed-vuex": "^0.2.0",
     "vue": "^3.2.25",
+    "vue-advanced-chat": "https://github.com/antoine92190/vue-advanced-chat/tarball/next",
     "vue-hooks-form": "^0.2.2",
     "vue-mobile-detection": "^2.0.1",
     "vue-router": "^4.0.12",
     "vue3-calendar-heatmap": "^2.0.0",
     "vue3-markdown-it": "^1.0.10",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "youtube-player": "^5.5.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.0.0",

@@ -1,4 +1,4 @@
-FROM m1k1o/neko:firefox
+FROM codx/neko:firefox
 
 RUN groupadd --gid 1001 codx
 

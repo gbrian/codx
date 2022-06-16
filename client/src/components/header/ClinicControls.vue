@@ -2,13 +2,13 @@
   <div class="flex space-x-2 p-2 border rounded-md">
     <div
       :class="['online btn btn-sm btn-accent rounded-md']"
-      @click="clinic.releaseControl()"
-      v-if="liveClinic"
+      @click="$storex.clinic.releaseControl({ clinic })"
+      v-if="clinic?.hasControl"
     >
       <CursorClickIcon class="cursor-pointer w-5 "/>
     </div>
     <div
-      :class="['avatar', liveClinic ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
+      :class="['avatar', clinic?.active ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
       tabindex="0"
       @click="$emit('toggle-clinic')"
     >

@@ -139,6 +139,7 @@ module.exports = strapi => {
         envs: {
           GIT_REPO_PROJECT: repository,
           GIT_REPO_FOLDER: folder,
+          NEKO_DEBUG: "true",
           ...user.envs
         },
         mounts

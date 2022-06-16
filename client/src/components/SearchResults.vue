@@ -47,7 +47,7 @@
             @mouseout="carrouselMe(null)"
           >
             <div class="w-full carousel-item"
-              v-for="(mhtml, iix) in getResultMedia(result)" :key="iix"
+              v-for="(mhtml, iix) in getResultMedia(result, true)" :key="iix"
               >
               <div v-html="mhtml" class="w-full"></div>
             </div>
@@ -194,18 +194,21 @@ export default {
         media: result.media.filter(({ type }) => type === 'youtube')
       })
     },
-    getResultMedia (result) {
-      return (result.media||[]).map(({ type, url }) => {
-        if (type === 'image') {
-          return `<img src="${url}" class="w-full h-full" />`
-        }
-        if (type === 'youtube') {
-          return `<iframe src="${url}"
-            class="w-full h-full"
-            title="YouTube video player"
-            frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
-        }
-      }).filter(r => !!r)
+    getResultMedia (result, imagesFirst) {
+      return (result.media||[])
+        .sort(({ type }) => !imagesFirst || type === 'image' ? -1 : 1)
+        .map(({ type, url }) => {
+          if (type === 'image') {
+            return `<img src="${url}" class="w-full h-full" />`
+          }
+          if (type === 'youtube') {
+            return `<iframe src="${url}"
+              class="w-full h-full"
+              title="YouTube video player"
+              frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+          }
+        })
+        .filter(r => !!r)
     },
     resultHasVideo (result) {
       return result.media.some(({ type }) => type === 'youtube' )

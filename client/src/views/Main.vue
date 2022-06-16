@@ -56,7 +56,7 @@
           :explorerVisible="explorerVisible"
           :chatVisible="chatVisible"
           :videoVisible="videoCall && !videoHidden"
-          :clinic="currentClinic"
+          :clinicId="currentClinic?.id"
           :isFullscreen="isFullscreen"
           @leave-clinic="leaveClinic"
           @delete-clinic="deleteClinic"
@@ -73,7 +73,7 @@
         />
       <div class="lg:flex flex-row hidden h-full w-full">
         <div class="grow mt-1" v-if="currentClinic">
-          <NekoRoom :room="currentClinic" ref="nekoRoom" />
+          <NekoRoom :roomId="currentClinic.id" ref="nekoRoom" />
         </div>
         <div :class="['flex',
             stackPanels ? 'flex-col-reverse' : 'flex-row',
@@ -301,7 +301,7 @@ export default {
             content: `@${username} started new clinic.`,
             extra: {
               event: 'clinic',
-              clinic
+              clinic: { id: clinic.id }
             }
           })
         }
@@ -332,7 +332,7 @@ export default {
             content: `@${username} joined clinic.`,
             extra: {
               event: 'clinic',
-              clinic: this.$storex.clinic.currentClinic
+              clinic: { id: this.$storex.clinic.currentClinic.id }
             }
           })
         }

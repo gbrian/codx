@@ -19,7 +19,7 @@ import axios from 'axios'
 import { mount } from 'mount-vue-component'
 import NekoRoomUserLayer from './NekoRoomUserLayer.vue'
 export default {
-  props: ['room'],
+  props: ['roomId'],
   data () {
     return {
       pageReady: false,
@@ -33,7 +33,7 @@ export default {
   created () {
     this.checkPage()
   },
-  destroyed () {
+  beforeUnmount () {
     console.log("NekoRoom", "destroyed")
     clearInterval(this.checkTout)
     if (this.userLayer) {
@@ -41,6 +41,9 @@ export default {
     }
   },
   computed: {
+    room () {
+      return this.$storex.clinic.allClinics[this.roomId]
+    },
     url () {
       const { url, nekoPassword } = this.room
       const { user: { username } } = this.$storex.user
@@ -68,6 +71,14 @@ export default {
     },
     users () {
       return this.$storex.network.friends
+    },
+    hasControl () {
+      return this.room.hasControl
+    }
+  },
+  watch: {
+    hasControl (newVal) {
+      this.setHasControl(newVal)
     }
   },
   methods: {
@@ -131,19 +142,31 @@ export default {
       this.room.nekoClient = this.$client
       this.loading = false
       // Create user layer
-      this.userLayer = mount(NekoRoomUserLayer, { props: { storex: this.$storex } })
+      this.userLayer = mount(NekoRoomUserLayer, { props: { storex: this.$storex, roomId: this.roomId } })
       const { el } = this.userLayer
+      el.addEventListener('click', this.onUserLayerClick.bind(this))
+      el.addEventListener('mousemove', this.setUserCursor.bind(this))
+      el.addEventListener('mouseleave', this.removeUserCursor.bind(this))
       el.className = "user-layer"
       this.overlay.parentNode.prepend(el)
+      this.setHasControl(false)
     },
-    setUserCursor ({ layerX, layerY }) {
-      const { clientWidth, clientHeight } = this.overlay
+    setUserCursor (event) {
+      const { layerX, layerY, target } = event
+      const { clientWidth, clientHeight } = target
       const px = 100 / clientWidth * layerX
       const py = 100 / clientHeight * layerY
       this.room.cursorPosition = { px, py, ts: new Date().getTime() }
     },
     removeUserCursor () {
       this.room.cursorPosition = null
+    },
+    onUserLayerClick (e) {
+      const { clinic } = this.$storex
+      clinic.requestControl()
+    },
+    setHasControl (newVal) {
+      this.overlay.style.display = newVal ? "" : "none"
     }
   }
 }

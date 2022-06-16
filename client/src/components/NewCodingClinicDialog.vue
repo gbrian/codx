@@ -191,7 +191,7 @@ export default {
       return this.name && this.template >= 0 && this.canPay
     },
     canPay () {
-      return (this.user.credits||0) >= this.templates[this.template].credits
+      return (this.user.credits || 0) >= (this.templates[this.template].creditsHour || 0)
     }
   },
   methods: {
@@ -211,7 +211,7 @@ export default {
       this.$emit('ok', settings)
     },
     cardImage (card) {
-      return card.media.filter(({ type }) => type === 'image')[0].url
+      return (card.media.filter(({ type }) => type === 'image')[0]||{}).url
     }
   }
 }

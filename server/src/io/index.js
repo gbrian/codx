@@ -64,7 +64,7 @@ class ioManager {
   }
 
   onNewConnectionClinicEvents (socket) {
-    socket.on('clinic-request-control', ({ id, clinicId }, cb) => {
+    socket.on('clinic-request-control', ({ user: { id }, clinic: { id: clinicId } }, cb) => {
       try {
         const user = this.users[id]
         const { network: { friends = [] } } = user
@@ -72,7 +72,7 @@ class ioManager {
         Promise.all(friends.filter(fid => !!this.users[fid]?.socket)
             .map(fid => new Promise(ok => {
             try {
-              this.users[fid].socket.timeout(2000).emit('clinic-request-control', { user: id, clinicId }, err => { 
+              this.users[fid].socket.timeout(2000).emit('clinic-request-control', { user: { id }, clinic: { id: clinicId } }, err => { 
                 ok(err + "")
               })
             } catch (err) {

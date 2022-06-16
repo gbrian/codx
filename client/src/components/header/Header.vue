@@ -4,13 +4,13 @@
     >
     <div class="flex flex-row">
       <Logo 
-        :class="['cursor-pointer w-10 h-10 my-4 mx-2', liveClinic ? 'lg:hidde' : '']"
-        v-if="!explorerVisible && liveClinic"
+        :class="['cursor-pointer w-10 h-10 my-4 mx-2', clinic ? 'lg:hidde' : '']"
+        v-if="!explorerVisible && clinic"
         @click="$emit('open-explorer')"
       />
       <ChevronLeftIcon
-        :class="['cursor-pointer w-7 ml-2 mr-5', liveClinic ? '' : 'lg:hidde']"
-        v-if="explorerVisible && liveClinic"
+        :class="['cursor-pointer w-7 ml-2 mr-5', clinic ? '' : 'lg:hidde']"
+        v-if="explorerVisible && clinic"
         @click="$emit('close-explorer')"
       />
       <div class="flex flex-col pt-2 px-2">
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="flex items-center space-x-6">
-      <div class="flex space-x-2 p-2 border rounded-md" v-if="liveClinic">
+      <div class="flex space-x-2 p-2 border rounded-md" v-if="clinic">
         <div
           :class="['avatar', chatVisible ? 'btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
           @click="$emit('toggle-chat')"
@@ -81,11 +81,16 @@
         >
           <PhoneMissedCallIcon class="cursor-pointer w-5 "/>
         </div>
+        <div
+          :class="['avatar', camOn ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
+          @click="onMedia"
+        >
+          <i class="fa-solid fa-photo-film w-5"></i>
+        </div>
       </div>
 
       <ClinicControls class="flex space-x-2 p-2 border rounded-md"
-        :clinic="clinic || chat?.clinic"
-        :liveClinic="liveClinic"
+        :clinic="clinic"
         @clinic-fullScreen="$emit('clinic-fullScreen')"
         @toggle-clinic="toggleClinic"
       />
@@ -140,15 +145,15 @@ export default {
     Logo,
     ClinicControls
   },
-  props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinic', 'isFullscreen'],
+  props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinicId', 'isFullscreen'],
   data () {
     return {
       newCodingClinic: false
     }
   },
   computed: {
-    liveClinic () {
-      return this.clinic
+    clinic () {
+      return this.$storex.clinic.allClinics[this.clinicId]
     },
     call () {
       return this.$storex.call.currentCall
@@ -169,7 +174,7 @@ export default {
       }))
     },
     showChatToggle () {
-      return this.liveClinic
+      return this.clinic
     },
     me () {
       return this.$storex.user.user
@@ -230,7 +235,7 @@ export default {
       return clinic && clinic.hosting
     },
     toggleClinic () {
-      if (this.liveClinic)  {
+      if (this.clinic)  {
         return this.$emit('leave-clinic')
       }
       if (this.chat?.clinic) {
