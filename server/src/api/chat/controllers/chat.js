@@ -8,11 +8,11 @@
 
 module.exports = createCoreController('api::chat.chat', ({ strapi }) => ({
   async create (ctx) {
-    const { params: { name }, request: { body } } = ctx
+    const { request: { body } } = ctx
     const data = {
       ...body,
       admins: [ctx.state.user],
-      name,
+      name: (body.name || "").replace(/[^a-zA-Z0-9@\-]/g, "_"),
       roomId: `${uuid()}`
     }
     const { id } = await strapi.$api('chat').create({ data })

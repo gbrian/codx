@@ -75,6 +75,17 @@ module.exports = createCoreController('api::neko-room.neko-room', ({ strapi }) =
       user.token = authorization.split(" ")[1]
       const cloudProvider = await strapi.$api('cloud-provider').findOne(id, { populate: { company: true } })
       // const userCompanies = (await codx.user.companies(user)).filter(({ id: cid, admins }) => cid === id && )
+    },
+    async reload ({ params: { id }}) {
+      const nekoRoom = await strapi.$query('neko-room').findMany({
+        filters: { id },
+      })
+      const {
+        settings: { cloudProvider: { settings } },
+        room: { neko: { id: roomId } } 
+      } = nekoRoom[0]
+      await strapi.$codx.room.restart({ nekoRoomsProvider: settings, roomId })
+      return id
     }
   }
 });

@@ -131,9 +131,10 @@ export default {
           credits: 200
         },
         {
-          title: "Data ML/AI",
-          description: "Data anlysis project.",
-          tags: ['jupyter-lab', 'tensorflow', 'conda', 'pytorch'],
+          title: "Neko",
+          image: "m1k1o/neko:firefox",
+          description: "Neko room.",
+          tags: [''],
           media: [
             { type: 'image', url: '/logo.png' }
           ],

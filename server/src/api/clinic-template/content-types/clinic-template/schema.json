@@ -58,6 +58,15 @@
     },
     "creditsHour": {
       "type": "integer"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "private",
+        "hidden"
+      ],
+      "default": "public"
     }
   }
 }

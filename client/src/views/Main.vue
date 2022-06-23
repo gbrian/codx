@@ -69,17 +69,18 @@
           @user-profile="showUserProfile"
           @toggle-video="toggleVideoHidden"
           @clinic-fullScreen="clinicFullScreen"
+          @toggle-media="toggleMediaPlayer"
           v-if="showHeader"
         />
       <div class="lg:flex flex-row hidden h-full w-full">
         <div class="grow mt-1" v-if="currentClinic">
           <NekoRoom :roomId="currentClinic.id" ref="nekoRoom" />
         </div>
-        <div :class="['flex',
+        <div :class="['flex m-2',
             stackPanels ? 'flex-col-reverse' : 'flex-row',
             currentClinic ? (chatVisible ? 'w-1/3' : 'w-1/6') : 'grow'
           ]"
-          v-if="chatVisible || videoCallVisible"
+          v-if="stackPanelVisible"
         >
           <ChatBox class="w-full chat-box grow border-l border-slate-500 bg-neutral-focus text-neutral-content"
             :chat="$storex.chat.openedChat" v-if="chatVisible"
@@ -93,6 +94,11 @@
             @close="toggleVideoHidden"
           />
         </div>
+        <MediaPlayer
+            :class="['flex-none rounded-md p-2 bg-neutral-focus rounded-md w-1/5']"
+            :clinicId="currentClinic.id"
+            v-if="mediaPlayerVisible"
+          />
       </div>
     </div>
     <LoadingDialog v-if="loading" />
@@ -122,6 +128,7 @@ import TaskManager from '@/components/TaskManager.vue'
 import InviteBtn from '@/components/InviteBtn.vue'
 import CodxAcademyHero from '@/components/hero/CodxAcademyHero.vue'
 import UserCalendar from '@/components/UserCalendar.vue'
+import MediaPlayer from '@/components/clinic/MediaPlayer.vue'
 export default {
   components: {
     SideBar,
@@ -141,7 +148,8 @@ export default {
     TaskManager,
     InviteBtn,
     CodxAcademyHero,
-    UserCalendar
+    UserCalendar,
+    MediaPlayer
   },
   data() {
     return {
@@ -158,7 +166,8 @@ export default {
       taskManager: null,
       hero: 'welcome',
       profileUser: null,
-      isFullscreen: false
+      isFullscreen: false,
+      mediaPlayerVisible: false
     };
   },
   mounted () {
@@ -231,6 +240,9 @@ export default {
     },
     showWelcome () {
       return this.hero === 'welcome' && !this.isProfile
+    },
+    stackPanelVisible () {
+      return this.chatVisible || this.videoCallVisible
     }
   },
   methods: {
@@ -360,6 +372,13 @@ export default {
     },
     toggleVideoHidden () {
       this.videoHidden = !this.videoHidden
+    },
+    toggleMediaPlayer () {
+      if (this.currentClinic?.media) {
+        this.mediaPlayerVisible = !this.mediaPlayerVisible
+      } else {
+        this.mediaPlayerVisible = false
+      }
     },
     onEventClick ({ event: eventSettings }) {
       const { event, clinic, type, roomId } = eventSettings

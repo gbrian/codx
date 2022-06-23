@@ -167,6 +167,14 @@ module.exports = strapi => {
         provider
       }
     },
+    createSnapshot ({ nekoRoomsProvider, roomId }) {
+      const nekoRooms = new NekoRooms(nekoRoomsProvider)
+      return nekoRooms.snapshot(roomId)
+    },
+    restart ({ nekoRoomsProvider, roomId }) {
+      const nekoRooms = new NekoRooms(nekoRoomsProvider)
+      return nekoRooms.restart(roomId)
+    },
     async createVps ({ user, providerName, settings, cloudProvider }) {
       console.log("codx-room", "createRoom", { user, providerName, settings, cloudProvider })
       const provider = cloudProviders[providerName](cloudProvider.settings)
@@ -261,6 +269,11 @@ module.exports = strapi => {
           neko: { name: roomName },
           nekoPwd, nekoAdminPwd, provider
         },
+        settings: {
+          template: {
+            media
+          } = {}
+        } = {},
         chat
       } = room
       const { id: chatId } = chat||{}
@@ -274,7 +287,8 @@ module.exports = strapi => {
         user: { id: userId, username },
         nekoPassword: !reqUserId || reqUserId === user.id ? nekoAdminPwd : nekoPwd,
         chat: { id: chatId },
-        provider
+        provider,
+        media
       }
     },
     async roomProxies ({ token, host, protocol }) {

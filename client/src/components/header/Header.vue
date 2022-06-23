@@ -81,18 +81,14 @@
         >
           <PhoneMissedCallIcon class="cursor-pointer w-5 "/>
         </div>
-        <div
-          :class="['avatar', camOn ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
-          @click="onMedia"
-        >
-          <i class="fa-solid fa-photo-film w-5"></i>
-        </div>
       </div>
 
       <ClinicControls class="flex space-x-2 p-2 border rounded-md"
-        :clinic="clinic"
+        :clinicId="clinicId"
+        :isFullscreen="isFullscreen"
         @clinic-fullScreen="$emit('clinic-fullScreen')"
         @toggle-clinic="toggleClinic"
+        @toggle-media="() => $emit('toggle-media')"
       />
     </div>
   </div>

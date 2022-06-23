@@ -86,6 +86,11 @@ class Strapi {
     return useFetch.get(`api/clinic-templates?${search}`, { headers })
   }
 
+  async createClinicTemplate (clinicTemplate) {
+    const { headers } = this
+    return useFetch.post("api/clinic-templates", clinicTemplate, { headers })
+  }
+
   async createChanne (channel) {
     const { headers } = this
     return useFetch.post("api/channels", channel, { headers })
@@ -118,6 +123,16 @@ class Strapi {
   async updateNetwork (settings) {
     const { headers } = this
     return useFetch.put("/api/networks/1", settings, { headers })
+  }
+
+  async createSnapshot (snapshotSettings) {
+    const { headers } = this
+    return useFetch.post("api/snapshots", snapshotSettings, { headers })
+  }
+
+  async reloadClinic (id) {
+    const { headers } = this
+    return useFetch.get(`api/neko-rooms/${id}/reload`, { headers })
   }
 }
 

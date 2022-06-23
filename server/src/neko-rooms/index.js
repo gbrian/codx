@@ -100,6 +100,11 @@ class NekoRooms {
     return await this.roomReady(room)
   }
 
+  async restart (id) {
+    await axios.post(`${this.baseUrl}/api/rooms/${id}/stop`, null, this.nekoAxiosAuth())
+    await axios.post(`${this.baseUrl}/api/rooms/${id}/start`, null, this.nekoAxiosAuth())
+  }
+
   async startOrCreate (nekoPayload) {
     try {
       return await this.start(nekoPayload.name)
@@ -139,6 +144,11 @@ class NekoRooms {
       }
       resolve()
     })
+  }
+
+  async snapshot (id) {
+    const res = await axios.post(`${this.baseUrl}/api/rooms/${id}/snapshot`, null, this.nekoAxiosAuth())
+    return res.data
   }
 }
 

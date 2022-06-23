@@ -66,7 +66,10 @@ export const actions = actionTree(
         setTimeout(() =>  $storex.clinic.init(), 1000)
       }
     },
-    async newCodingClinic({ state }, { chat, settings }) {
+    async newCodingClinic(_, { chat, settings }) {
+      if (!chat?.id) {
+        chat = await $storex.chat.newChat({ name: settings.name })
+      }
       const { data: clinic } = await api.createClinic({
         chat: { id: chat.id },
         settings
@@ -111,8 +114,17 @@ export const actions = actionTree(
     releaseControl (_, { clinic }) {
       $storex.clinic.setUserHasControl({ clinic, hasControl: false })
     },
-    sendEmote ({ state: { currentClinic }}, emote) {
-      currentClinic.neko.chat.sendEmote(emote)
+    sendEmote ({ state: { allClinics }}, { clinicId, emote }) {
+      allClinics[clinicId].neko?.chat.sendEmote(emote)
+    },
+    saveAsClinic (_, { id }) {
+      return api.createSnapshot({ clinic: { id } })
+    },
+    createClinicTemplate (_, clinicTemplate) {
+      return api.createClinicTemplate(clinicTemplate)
+    },
+    reloadClinic (_, clinicId) {
+      return api.reloadClinic(clinicId)
     }
   },
 )

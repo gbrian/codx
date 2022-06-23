@@ -24,6 +24,7 @@ function injectApi (params) {
       delete: (...args) => strapi.entityService.delete(...[sid, ...args])
     }
   }
+  strapi.$codx = require('../codx')(strapi)
   return params
 }
 

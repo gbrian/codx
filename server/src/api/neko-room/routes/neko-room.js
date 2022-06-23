@@ -14,6 +14,11 @@ module.exports = {
       method: 'POST',
       path: '/neko-rooms',
       handler: 'neko-room.create',
+    },
+    {
+      method: 'GET',
+      path: '/neko-rooms/:id/reload',
+      handler: 'neko-room.reload',
     }
   ]
 }

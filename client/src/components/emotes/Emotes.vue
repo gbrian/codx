@@ -22,6 +22,7 @@ export default {
   components: {
     ChevronDownIcon
   },
+  props: ['clinicId'],
   data () {
     return {
       emoteFilter: null,
@@ -89,7 +90,7 @@ export default {
   },
   methods: {
     send (emote) {
-      this.$storex.clinic.sendEmote(emote)
+      this.$storex.clinic.sendEmote({ clinicId: this.clinicId, emote })
       this.lastShown = emote
       this.$refs.list.blur()
     }
