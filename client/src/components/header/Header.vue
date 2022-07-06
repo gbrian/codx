@@ -3,16 +3,6 @@
       class="text-primary flex flex-row justify-between space-x-5 border-b border-slate-600/50 w-full px-2"
     >
     <div class="flex flex-row">
-      <Logo 
-        :class="['cursor-pointer w-10 h-10 my-4 mx-2', clinic ? 'lg:hidde' : '']"
-        v-if="!explorerVisible && clinic"
-        @click="$emit('open-explorer')"
-      />
-      <ChevronLeftIcon
-        :class="['cursor-pointer w-7 ml-2 mr-5', clinic ? '' : 'lg:hidde']"
-        v-if="explorerVisible && clinic"
-        @click="$emit('close-explorer')"
-      />
       <div class="flex flex-col pt-2 px-2">
         <div class="flex flex-row">
           <div class="dropdown"
@@ -46,6 +36,14 @@
       </div>
     </div>
     <div class="flex items-center space-x-6">
+      <div class="flex space-x-2 p-2 border rounded-md">
+        <div
+          :class="['avatar', explorerVisible ? 'btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
+          @click="$emit('toggle-explorer')"
+        >
+          <MenuIcon class="hidden md:block cursor-pointer w-5 "/>
+        </div>
+      </div>
       <div class="flex space-x-2 p-2 border rounded-md" v-if="clinic">
         <div
           :class="['avatar', chatVisible ? 'btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
@@ -98,7 +96,6 @@ import {
   SearchIcon,
   VideoCameraIcon,
   MicrophoneIcon,
-  ChevronLeftIcon,
   TerminalIcon,
   MenuIcon,
   ChatAltIcon,
@@ -122,7 +119,6 @@ export default {
     SearchIcon,
     VideoCameraIcon,
     MicrophoneIcon,
-    ChevronLeftIcon,
     TerminalIcon,
     MenuIcon,
     ChatAltIcon,

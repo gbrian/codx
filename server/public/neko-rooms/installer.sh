@@ -21,6 +21,7 @@ sudo apt-get update
 sudo apt-get install -y apache2-utils git
 
 echo "# Create neko-rooms folder"
+[ -d "neko-rooms" ] && rm -rf neko-rooms
 mkdir -p neko-rooms
 NEKO_ROOMS_DIR=$PWD/neko-rooms
 cd $NEKO_ROOMS_DIR
@@ -32,7 +33,6 @@ mkdir templates
 echo "# Create env file"
 export NEKO_ROOMS_USER=$(echo "$(htpasswd -nb $USERNAME $PASSWORD)")
 echo "
-NEKO_ROOMS_NAT1TO1=$NEKO_ROOMS_NAT1TO1
 NEKO_ROOMS_NEKO_IMAGES=codx/room:latest
 NEKO_ROOMS_USER=$NEKO_ROOMS_USER
 NEKO_ROOMS_INSTANCE_URL=http://$NEKO_ROOMS_NAT1TO1:$NEKO_ROOMS_PORT/

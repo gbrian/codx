@@ -133,7 +133,7 @@ export default {
         {
           title: "Neko",
           image: "m1k1o/neko:firefox",
-          description: "Neko room.",
+          description: "Neko room. m1k1o/neko:firefox",
           tags: [''],
           media: [
             { type: 'image', url: '/logo.png' }

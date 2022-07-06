@@ -97,8 +97,7 @@ export const actions = actionTree(
         const { roomId } = user
         const room = await WebRTCRoom.newRoom({
           name: roomId,
-          turnUser: user.webrtc?.turnUser,
-          turnPassword: user.webrtc?.turnPassword
+          webrtc: user.webrtc
         })
         $storex.session.setRoom(room)
       } else if(state.userRoom){

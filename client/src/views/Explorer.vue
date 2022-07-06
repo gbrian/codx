@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
-    <div class="mt-2 mb-6 w-full">
-      <label class="input-group input-group-sm w-full">
+    <div class="mt-2 mb-6 flex">
+      <label class="input-group input-group-sm grow">
         <input type="text"
           v-model="searchString"
           placeholder="Search..." class="input input-bordered input-sm w-full" @keypress.enter="doSearch"> 
@@ -9,15 +9,10 @@
           <SearchIcon class="w-4" />
         </span>
       </label>
-    </div>
-  
-    <div
-      :class="['text-base pl-3 cursor-pointer mb-2 mt-6', searchType === 'clinic' ? 'font-bold' : '']"
-      @click="$emit('home')"
-      v-if="false"
-    >
-      <HomeIcon class="h-5 w-5 float-left mr-2" />
-      Home
+      <InformationCircleIcon
+        :class="['cursor-pointer w-7 ml-2']"
+        @click="$emit('show-help')"
+      />
     </div>
 
     <div
@@ -61,7 +56,6 @@
 
     <div
       class="space-y-1.5 overflow-y-auto pb-12 lg:pb-0"
-      style="max-height: calc(100vh - 280px)"
       v-if="channelsOpen"
     >
       <div class="text-base pl-3 cursor-pointer mt-2 prose"
@@ -137,6 +131,7 @@ import {
   AtSymbolIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  InformationCircleIcon,
   PlusIcon,
   HashtagIcon,
   ChatAltIcon,
@@ -161,6 +156,7 @@ export default {
     AtSymbolIcon,
     ChevronDownIcon,
     ChevronUpIcon,
+    InformationCircleIcon,
     PlusIcon,
     HashtagIcon,
     ChatAltIcon,

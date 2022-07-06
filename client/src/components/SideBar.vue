@@ -2,10 +2,12 @@
   <div
     class="lg:py-4 py-1 h-full lg:px-2 px-1 flex flex-col justify-between items-center fixed relative bottom-0 z-50"
   >
-    <Logo
-      class="w-10 cursor-pointer mb-4"
-      @click="$emit('home')"
-    />
+    <div class="relative">
+      <Logo
+        :class="['w-12 cursor-pointer avatar cursor-pointer p-1 mb-4']"
+        @click="$emit('codx-icon-click')"
+      />
+     </div>
     <div class="flex flex-col grow justify-start">
       <div :class="['mb-2', isCurrentCompany(company) ? 'drop-shadow-lg' : '']"
         v-for="(company, cix) in companies" :key="cix"
@@ -23,6 +25,7 @@
         <PlusIcon class="h-8 w-8" />
       </div>
     </div>
+    <OnlineFriends class="grow my-4 bg-neutral-focus" :onlineFriends="onlineFriends" />
     <div
       class="lg:space-y-8 lg:flex hidden lg:flex-col justify-center items-center"
     >
@@ -41,12 +44,15 @@ import {
 } from "@heroicons/vue/outline";
 import UserMenu from "@/components/UserMenu.vue";
 import Logo from "@/components/Logo.vue";
+import OnlineFriends from '@/components/sidebar/OnlineFriends.vue'
 export default {
   components: {
     PlusIcon,
     UserMenu,
-    Logo
+    Logo,
+    OnlineFriends,
   },
+  props: ['explorerVisible'],
   data () {
     return {
       logos: [
@@ -66,6 +72,9 @@ export default {
     },
     companies () {
       return this.user?.companies
+    },
+    onlineFriends () {
+      return Object.values(this.$storex.network.friends).filter(({ online }) => online)
     }
   },
   methods: {

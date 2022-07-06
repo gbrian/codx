@@ -2,28 +2,31 @@
   <div class="flex flex-row h-screen overflow-hidden w-full bg-base-200" ref="main">
     <SideBar
       class=""
+      :explorerVisible="explorerVisible"
       @sideBar="toggleSideBar"
-      @home="goHome"
+      @codx-icon-click="onCodxIconClick"
       @switch-company="onSwitchCompany"
       v-if="sideBarVisible"
     />
     <div :class="[
-      'detail-bar bg-neutral-focus text-neutral-content drop-shadow-md',
+      'detail-bar drop-shadow-md',
       'grow h-full py-2 relative',
       'flex flex-col justify-between',
-      'w-1/3']"
-      v-if="explorerBarVisible">
-      <Explorer class="explorer w-full text-sm pl-2 pr-4"
-        v-if="explorerVisible"
-        @academy-courses="onAcademyCourses"
-        @coding-clinics="onCodingClinics"
-        @open-chat="chat => onOpenChat(chat)"
-        @open-channel="onOpenChannel"
-        @new-chat="onNewChat"
-        @task-manager="onTaskManager"
-        @home="goHome"
-        @calendar="() => toggleSideBar('calendar')"
-      />
+      explorerVisible ? 'w-1/3' : null]"
+      >
+      <div class="flex h-full">
+        <Explorer :class="['explorer grow text-sm pl-2 pr-4 bg-neutral-focus text-neutral-content']"
+          v-if="explorerVisible"
+          @academy-courses="onAcademyCourses"
+          @coding-clinics="onCodingClinics"
+          @open-chat="chat => onOpenChat(chat)"
+          @open-channel="onOpenChannel"
+          @new-chat="onNewChat"
+          @task-manager="onTaskManager"
+          @calendar="() => toggleSideBar('calendar')"
+          @show-help="onShowHelp"
+        />
+      </div>
       <UserCalendar class="w-full" v-if="calendarVisible"/>
       <InviteBtn v-if="false" />
     </div>
@@ -47,7 +50,7 @@
       class="h-full w-full"
       :channel="$storex.channel.currentChannel"
     />
-    <CodxAcademyHero class="academy-hero" v-if="showWelcome" @close="hero = null" />
+    <CodxAcademyHero class="academy-showHelp" v-if="isHelpShown" />
     <Profile class="profile w-full h-full p-4" v-if="isProfile" />
     <div class="splittedView lg:flex flex-col w-full bg-base-200" v-if="splittedView">
       <Header
@@ -62,7 +65,6 @@
           @delete-clinic="deleteClinic"
           @join-clinic="joinClinic"
           @new-clinic="showCodingClinicDialog = true"
-          @close-explorer="sideBar = ''"
           @open-explorer="sideBar = 'explorer'"
           @toggle-chat="toggleChatHidden"
           @remove-user="removeUser"
@@ -70,6 +72,7 @@
           @toggle-video="toggleVideoHidden"
           @clinic-fullScreen="clinicFullScreen"
           @toggle-media="toggleMediaPlayer"
+          @toggle-explorer="onCodxIconClick"
           v-if="showHeader"
         />
       <div class="lg:flex flex-row hidden h-full w-full">
@@ -164,7 +167,7 @@ export default {
       videoHidden: false,
       loading: false,
       taskManager: null,
-      hero: 'welcome',
+      showHelp: false,
       profileUser: null,
       isFullscreen: false,
       mediaPlayerVisible: false
@@ -181,9 +184,7 @@ export default {
     if (channel) {
       this.onOpenChannel({ id: parseInt(channel) })
     }
-    if (runClinicName) {
-      this.onAcademyCourses()
-    }
+    this.onAcademyCourses()
   },
   computed: {
     openChat () {
@@ -206,19 +207,19 @@ export default {
       return this.sideBar !== ''
     },
     sideBarVisible () {
-      return this.currentClinic ? this.explorerVisible : true
+      return true
     },
     showChannel () {
       return this.$storex.channel.currentChannel
     },
     showHeader () {
-      return !this.showCodingClinics && !this.showChannel && (!this.taskManager || this.chatVisible) && !this.showOpenClinics
+      return this.openChat
     },
     currentCompnay () {
       return this.$storex.company.currentCompnay
     },
     splittedView () {
-      return !this.showWelcome && !this.showCodingClinics && !this.showOpenClinics && !this.showChannel && (!this.taskManager || this.chatVisible)
+      return !this.showHelp && !this.showCodingClinics && !this.showOpenClinics && !this.showChannel && (!this.taskManager || this.chatVisible)
     },
     videoCall () {
       return this.$storex.call.currentCall
@@ -229,20 +230,17 @@ export default {
     stackPanels () {
       return this.chatVisible && this.videoCallVisible && this.currentClinic
     },
-    explorerBarVisible () {
-      if (this.$root.isMobile && (this.chatVisible || this.videoCallVisible || this.currentClinic)) {
-        return false
-      }
-      return this.explorerVisible || this.calendarVisible
-    },
     isProfile () {
       return this.$route.path.indexOf("/profile/") !== -1
     },
-    showWelcome () {
-      return this.hero === 'welcome' && !this.isProfile
+    isHelpShown () {
+      return this.showHelp
     },
     stackPanelVisible () {
       return this.chatVisible || this.videoCallVisible
+    },
+    resizibleExplorer () {
+      return !!this.currentClinic
     }
   },
   methods: {
@@ -254,7 +252,7 @@ export default {
     },
     async resetView (options) {
       const { keepChat } = options||{}
-      this.hero = null
+      this.showHelp = false
       this.leaveClinic ()
       if (!keepChat) {
         await this.$storex.chat.setOpenedChat()
@@ -264,10 +262,12 @@ export default {
       this.showOpenClinics = false
       this.$router.push('/')
     },
-    goHome () {
-      this.resetView()
-      this.hero = 'welcome'
-      this.sideBar = 'explorer'
+    onCodxIconClick () {
+      if (this.explorerVisible) {
+        this.sideBar = ''
+      } else {
+        this.sideBar = 'explorer'
+      }
     },
     async onOpenChat (chat) {
       if (this.$storex.chat.openedChat?.id === chat?.id) {
@@ -319,7 +319,7 @@ export default {
         }
         this.joinClinic(clinic)
         this.showCodingClinicDialog = false
-        this.hero = null
+        this.showHelp = false
       } catch{}
     },
     deleteClinic (clinic) {
@@ -420,6 +420,10 @@ export default {
         main.requestFullscreen()
         this.isFullscreen = true
       }
+    },
+    async onShowHelp () {
+      await this.resetView()
+      this.showHelp = true
     }
   }
 };

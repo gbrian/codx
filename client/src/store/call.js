@@ -44,7 +44,7 @@ export const actions = actionTree(
         audio: true,
         userid: user.id,
         roomId,
-        webrtc: $storex.company.webrtcSettings,
+        webrtc: $storex.company.webrtcSettings || user.webrtc,
         onStreamsChanged (ev) {
           $storex.call.updateCallFromRtc(ev)
         }

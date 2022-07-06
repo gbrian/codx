@@ -1,5 +1,15 @@
 <template>
   <div class="clinic-list">
+    <div class="flex my-2">
+      <FilterIcon class="w-6 mr-4" />
+      <select class="select max-w-xs"
+        v-for="(filter, fix) in filters" :key="fix"
+        @change="option => applyFilter(filter, option)"
+      >
+        <option selected>{{ filter.title }}</option>
+        <option v-for="(option, oix) in filter.options" :key="oix">{{ option }}</option>
+      </select>
+    </div>
     <div class="grid grid-rows-2 grid-flow-col gap-4 p-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
       <div class="relative px-2 py-1 border rounded-md flex flex-col justify-between bg-base-100 border-accent-focus drop-shadow-lg"
         v-for="(clinic, cix) in orderedClinics" :key="cix"
@@ -54,7 +64,8 @@ import {
   TrashIcon,
   PencilIcon,
   XCircleIcon,
-  SaveIcon
+  SaveIcon,
+  FilterIcon
 } from "@heroicons/vue/outline"
 import moment from 'moment'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -66,6 +77,7 @@ export default {
     PencilIcon,
     XCircleIcon,
     SaveIcon,
+    FilterIcon,
     UserAvatar,
     DeleteClinicDialog
   },
@@ -85,7 +97,14 @@ export default {
       return this.$storex.user.user
     },
     orderedClinics () {
-      return this.clinics.sort((a, b) => a.createdAt > b.createdAt ? -1 : 0)
+      return this.clinics
+        .filter(c => c.visible === undefined || c.visible)
+        .sort((a, b) => a.createdAt > b.createdAt ? -1 : 0)
+    },
+    filters () {
+      return [
+        { title: "Provider", options: [...new Set(this.clinics.map(c => c.provider ))], isVisible (c) { return !this.filter || c.provider === this.filter } }
+      ]
     }
   },
   methods: {
@@ -103,6 +122,14 @@ export default {
     onDeleteClinic () {
       this.$emit('delete-clinic', this.deleteClinic)
       this.deleteClinic = null
+    },
+    applyFilter(filter, { target: { value: option } }) {
+      const valid = filter.options.some(o => o === option)
+      filter.filter = valid ? option : undefined
+      const { filters, clinics } = this
+      clinics.map(c => {
+        c.visible = filters.some(f => f.isVisible(c))
+      })
     }
   }
 }

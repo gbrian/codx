@@ -15,9 +15,8 @@ class ioManager {
 
   get onlineUsers () {
     const now = new Date()
-    return Object.keys(this.users)
-      .filter(k => (now - this.users[k].lastOnline) <= 60000)
-      .map(k => this.users[k])
+    return Object.values(this.users)
+      .filter(u => u.socket?.connected && (now - u.lastOnline) <= 60000)
       .reduce((acc, u) => {
         acc[u.id] = u
         return acc
@@ -47,6 +46,9 @@ class ioManager {
         rtcmulticonnectionServer.addSocket(socket);
         rtcmulticonnectionServer.pushLogs({}, 'ioManager', { message: 'Socket added to rtcmulticonnection-server' })
         this.onConnection(socket)
+        socket.on("disconnect", () => {
+          this.onDisconnect(socket)
+        });
       })
     this.rooms = {}
   }
@@ -61,6 +63,9 @@ class ioManager {
     } catch (ex) {
       console.error("io", "new socket connection error", { ex })
     }
+  }
+
+  onDisconnect (socket) {
   }
 
   onNewConnectionClinicEvents (socket) {

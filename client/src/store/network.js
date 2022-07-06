@@ -5,7 +5,7 @@ import api from '@/api'
 export const namespaced = true
 
 export const state = () => ({
-  friends: null,
+  friends: {},
   allUsers: {}
 })
 
@@ -27,14 +27,15 @@ export const mutations = mutationTree(state, {
   },
   updateFriendStatus (state, friendStatus = []) {
     const { friends } = state
-    friendStatus.forEach(friend =>
-      friends[friend.id] = {
-        ...friends[friend.id],
-        ...friend
-      })
-    state.friends = {
-      ...friends
-    }
+    Object.values(friends).forEach(f => { f.online = false })
+    friendStatus.forEach(friend => {
+      const existingFriend = friends[friend.id]
+      if (existingFriend) {
+        Object.assign(existingFriend, friend)
+      } else {
+        friends[friend.id] = friend
+      }
+    })
     $storex.network.updateAllUsers()
   },
   updateAllUsers (state) {

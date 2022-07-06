@@ -149,6 +149,7 @@ export default {
       el.addEventListener('mouseleave', this.removeUserCursor.bind(this))
       el.className = "user-layer"
       this.overlay.parentNode.prepend(el)
+      this.$storex.clinic.initClinicNeko({ clinic: this.room, neko: this.neko })
       this.setHasControl(false)
     },
     setUserCursor (event) {

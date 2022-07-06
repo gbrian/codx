@@ -18,7 +18,7 @@
       :clinicId="clinicId"
       class="btn-sm btn-ghost rounded-md" />
     <div
-        :class="['avatar', camOn ? 'online btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
+        :class="['avatar', 'online btn btn-sm btn-accent rounded-md']"
         @click="$emit('toggle-media', clinicId)"
       >
         <i class="fa-solid fa-photo-film w-6"></i>

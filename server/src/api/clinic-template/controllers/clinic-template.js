@@ -24,13 +24,13 @@ module.exports = createCoreController('api::clinic-template.clinic-template', ({
     }})
   },
   async find ({ state: { user }}) {
-    const privateClinics = strapi.$query('clinic-template').findMany({
+    const privateClinics = user ? strapi.$query('clinic-template').findMany({
       where: {
         visibility: { $not: 'public' },
         user: user.id
       },
       populate: { user: true, sponsor: true }
-    })
+    }) : Promise.resolve([])
     const publicClinics = strapi.$query('clinic-template').findMany({
       where: {
         visibility: 'public',

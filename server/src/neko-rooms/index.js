@@ -8,7 +8,6 @@ class NekoRooms {
   roomsUrl = `https://${process.env.NEKO_ROOMS_TRAEFIK_ROOMS_DOMAIN}`
   user = process.env.NEKO_ROOMS_USER
   password = process.env.NEKO_ROOMS_PWD
-  maxConcurrent = 10
 
   constructor (provider) {
     if (provider) {

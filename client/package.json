@@ -35,6 +35,7 @@
     "vue-router": "^4.0.12",
     "vue3-calendar-heatmap": "^2.0.0",
     "vue3-markdown-it": "^1.0.10",
+    "vue3-twemoji-picker-final": "^0.0.15",
     "vuex": "^4.0.2",
     "youtube-player": "^5.5.2"
   },

@@ -5,9 +5,21 @@ import api from '@/api'
 
 export const namespaced = true
 
+function getKeyboardSettings (neko) {
+  try {
+    if (neko.settings.keyboard_layouts_list[navigator.language]) {
+      return navigator.language
+    }
+  } catch {}
+  return 'es'
+}
 export const state = () => ({
   allClinics: {},
-  currentClinic: null
+  currentClinic: null,
+  settings: {
+    scroll: 1,
+    keyboardLayout: 'es'
+  }
 })
 
 export const getters = getterTree(state, {
@@ -25,7 +37,7 @@ function prepareClinic (clinic) {
 
 export const mutations = mutationTree(state, {
   setClinics (state, clinics) {
-    clinics.map(prepareClinic)
+    clinics && clinics.map(prepareClinic)
       .forEach(c => {
         state.allClinics = {
           ...state.allClinics,
@@ -52,6 +64,13 @@ export const mutations = mutationTree(state, {
     delete state.allClinics[id]
     state.allClinics = {
       ...state.allClinics
+    }
+  },
+  initClinicNeko (state, { clinic, neko }) {
+    clinic.neko = neko
+    state.settings = {
+      ...state.settings,
+      keyboardLayout: getKeyboardSettings(neko)
     }
   }
 })
@@ -99,7 +118,7 @@ export const actions = actionTree(
       const { id } = $storex.user.user
       console.log("clinic", { user: { id }, position })
     },
-    requestControl({ state: { currentClinic }}) {
+    requestControl({ state: { currentClinic, settings }}) {
       const { id } = $storex.user.user
       $storex.clinic.setRequestControl({ clinic: currentClinic, requestingControl: true })
       $storex.session.emit({
@@ -108,6 +127,9 @@ export const actions = actionTree(
         cb: () => {
           $storex.clinic.setUserHasControl({ clinic: currentClinic, hasControl: true })
           $storex.clinic.setRequestControl({ clinic: currentClinic, requestingControl: false })
+          // Scroll smooth
+          // currentClinic.neko.settings.setScroll(settings.scroll)
+          // currentClinic.neko.settings.setKeyboardLayout(settings.keyboardLayout)
         }
       })
     },
