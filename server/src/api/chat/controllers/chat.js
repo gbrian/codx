@@ -47,15 +47,17 @@ module.exports = createCoreController('api::chat.chat', ({ strapi }) => ({
     if (!admins.filter(a => a.id === user.id)[0]) {
       throw new Error("Not allowed")
     }
-    const data = {}
+    const data = {
+      guests,
+      admins
+    }
     if (guest) {
-      data.guests = [...guests, guest]
-      strapi.$api('network').update({ data: { user: guest, friends: data.guests.concat(data.admins) }})
+      guests.push(guest)
     } 
     if (admin) {
-      data.admins = [...admins, admin]
-      strapi.$api('network').update({ data: { user: admin, friends: data.guests.concat(data.admins) }})
+      admins.push(admin)
     }
+    strapi.$api('network').makeFriends([...data.guests, ...data.admins])
     if (name) {
       data.name = name
     }

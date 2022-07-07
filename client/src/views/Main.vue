@@ -85,7 +85,7 @@
           ]"
           v-if="stackPanelVisible"
         >
-          <ChatBox class="w-full chat-box grow border-l border-slate-500 bg-neutral-focus text-neutral-content"
+          <ChatBox class="w-full chat-box grow bg-neutral-focus text-neutral-content"
             :chat="$storex.chat.openedChat" v-if="chatVisible"
             @on-event-click="onEventClick"
             @hide-chat="toggleChatHidden"

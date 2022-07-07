@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full">
-    <div class="mt-2 mb-6 flex">
+  <div class="scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-100">
+    <div class="py-2 flex sticky top-0 bg-neutral-focus z-10">
       <label class="input-group input-group-sm grow">
         <input type="text"
           v-model="searchString"
@@ -22,7 +22,7 @@
       <AcademicCapIcon class="h-6 mr-2" />
       <div>codx academy</div>
       <div class="flex grow ml-2 mr-4">
-        <progress class="progress progress-secondary mt-3 mx-2" value="20" max="100"></progress>
+        <progress class="progress progress-secondary mt-3 mx-2 z-0" value="20" max="100"></progress>
         <small>{{ me?.credits }}</small>
         <CreditCardIcon class="h-6 ml-1" />
       </div>
@@ -228,7 +228,7 @@ export default {
     },
     doSearch () {
       const { searchString: q } = this
-      q && this.$storex.search.doSearch({ q })
+      q && this.$storex.search.findPeople({ q })
     }
   }
 };

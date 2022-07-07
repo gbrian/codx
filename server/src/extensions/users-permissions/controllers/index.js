@@ -10,5 +10,8 @@ module.exports = ({ controllers }) => {
     const codxUserData = await codxUser.me({ id: sme. id })
     ctx.body = codxUserData
   }
+  user.find = async ({ request: { query }}) => {
+    return codxUser.findPeople(query.q)
+  }
   return controllers
 }

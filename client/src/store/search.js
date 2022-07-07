@@ -30,6 +30,10 @@ export const actions = actionTree(
         results
       })
     },
+    async findPeople (_, query) {
+      const { data } = await api.findPeople(query.q)
+      return data
+    },
     async academyCourses (ctx, query = {}) {
       await $storex.search.doSearch({ ...query, searchType: 'academy' })
       const { currentSearch } = $storex.search

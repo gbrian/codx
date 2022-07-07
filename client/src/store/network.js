@@ -73,6 +73,9 @@ export const actions = actionTree(
     async joinCompany ({ state: { token } }, company) {
       await api.updateNetwork({ addCompany: company })
       await api.me(token)
+    },
+    async findPeople(_, search) {
+      return api.findPeople(search)    
     }
   },
 )

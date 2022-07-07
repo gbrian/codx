@@ -5,14 +5,17 @@
         <UserAddIcon :class="`hidden md:block cursor-pointer w-${size || 6}`" />
       </div>
     </div>
-    <ul tabindex="0" class="ml-4 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
+    <ul tabindex="0" class="ml-4 p-2 shadow menu dropdown-content bg-base-100 rounded-md w-52">
       <li>
         <div class="mt-2 mb-6 w-full">
-          <label class="input-group input-group-sm w-full">
+          <label class="input-group input-group-sm w-full input-bordered">
             <input type="text"
               v-model="userFilter"
-              placeholder="Search..." class="input input-bordered input-sm w-full" @keypress.enter="doUserSearch"> 
-            <span class="cursor-pointer text-base-content" @click="doUserSearch">Go</span>
+              placeholder="Search..." class="input input-sm w-full" @keypress.enter="doUserSearch"> 
+            <span class="cursor-pointer text-base-content" @click="doUserSearch">
+              <XCircleIcon class="w-6" v-if="applyFilter" />
+              <SearchIcon class="w-6" v-else />
+            </span>
           </label>
         </div>
       </li>
@@ -30,20 +33,15 @@
           <button class="btn btn-xs" v-for="(p, pix) in pages" :key="pix" @click="page = pix" >{{ pix + 1 }}</button>
         </div>
       </li>
-      <hr/>
-      <li @click="$emit('invite-user')">
-        <a class="flex gap-2">
-          <ShareIcon class="w-6" />
-          <strong>Invite user</strong>
-        </a>
-      </li> 
     </ul>
   </div>
 </template>
 <script>
 import { 
   UserAddIcon,
-  ShareIcon
+  ShareIcon,
+  SearchIcon,
+  XCircleIcon
 } from "@heroicons/vue/outline"
 import Avatar from '@/components/Avatar.vue'
 export default {
@@ -51,27 +49,32 @@ export default {
   components: {
     UserAddIcon,
     ShareIcon,
+    SearchIcon,
+    XCircleIcon,
     Avatar
   },
   data () {
     return {
       userFilter: null,
+      applyFilter: null,
       page: 0,
+      lastSearch: []
     }
   },
   computed: {
     friendList () {
       const { friends } = this.$storex.network
-      return Object.keys(friends).map(u => friends[u])
+      const filteredFriends = Object.values(friends)
               .filter(u => this.showUser(u))
+      return [...this.lastSearch, ...filteredFriends]
     },
     onlineFriends () {
      
-      const { friendList, userFilter, page } = this
-      const isFilter = userFilter?.length > 2
+      const { friendList, applyFilter, page } = this
+      const isFilter = applyFilter?.length > 2
       
       return friendList
-              .filter(u => isFilter ? (u.username.toLowerCase().indexOf(userFilter.toLowerCase()) !== -1) : true)
+              .filter(u => isFilter ? (u.username.toLowerCase().indexOf(applyFilter.toLowerCase()) !== -1) : true)
               .sort(u => u.online ? -1 : 1)
               .slice(page, page + 5)
     },
@@ -87,7 +90,15 @@ export default {
     showUser (user) {
       return (this.ignoreUsers||[]).map(u => u.id).indexOf(user.id) === -1
     },
-    doUserSearch () {
+    async doUserSearch () {
+      if (this.applyFilter) {
+        this.applyFilter = null
+        this.userFilter = null
+        this.lastSearch = []
+      } else {
+        this.lastSearch = await this.$storex.search.findPeople({ q: this.userFilter })
+        this.applyFilter = this.userFilter
+      }
     }
   }
 }

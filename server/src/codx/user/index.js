@@ -58,6 +58,25 @@ module.exports = strapi => {
     async findUser (id) {
       return strapi.$query("users-permissions.user").findOne(id)
     },
+    async findPeople (search) {
+      const users = await strapi.$query("users-permissions.user").findMany({
+        filters: {
+          $or: [
+            {
+              username: {
+                $contains: search
+              },
+            },
+            {
+              email: {
+                $contains: search
+              }
+            }
+          ]
+        }
+      })
+      return users.map(this.filteredUser)
+    },
     async me (params) {
       const { id } = params
       const sme = await this.findUser(id)

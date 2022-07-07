@@ -134,6 +134,11 @@ class Strapi {
     const { headers } = this
     return useFetch.get(`api/neko-rooms/${id}/reload`, { headers })
   }
+
+  async findPeople (search) {
+    const { headers } = this
+    return useFetch.get(`api/users?q=` + search, { headers })
+  }
 }
 
 export default new Strapi()
