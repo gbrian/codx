@@ -65,6 +65,11 @@ const routes = [
     path: "/new-chat",
     name: "NewChatDemo",
     component: () => import("../views/NewChatDemo.vue"),
+  },
+  {
+    path: "/academy",
+    name: "Academy",
+    component: () => import("../views/Academy.vue"),
   }
 ];
 

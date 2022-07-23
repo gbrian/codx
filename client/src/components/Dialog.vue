@@ -13,11 +13,13 @@
           <div class="bg-base-100 text-neutral-content inline-block align-bottom  rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-2/4">
             <div class=" px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
-                <slot name="icon">
-                  <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-accent-focus sm:mx-0 sm:h-10 sm:w-10">
-                    <ExclamationIcon class="h-6 w-6 text-neutral-600" aria-hidden="true" />
-                  </div>
-                </slot>
+                <div v-if="!noIcon">
+                  <slot name="icon">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-accent-focus sm:mx-0 sm:h-10 sm:w-10">
+                      <ExclamationIcon class="h-6 w-6 text-neutral-600" aria-hidden="true" />
+                    </div>
+                  </slot>
+                </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <DialogTitle as="h3" class="text-lg leading-6 font-medium text-accent-900">
                     {{ title }}
@@ -61,7 +63,7 @@ export default {
     TransitionRoot,
     ExclamationIcon,
   },
-  props: ['title', 'btns'],
+  props: ['title', 'btns', 'noIcon'],
   data () {
     return {
       open: true,

@@ -27,6 +27,7 @@
     "notiwind": "^1.2.5",
     "rtcmulticonnection": "^3.7.0",
     "socket.io-client": "^4.4.1",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "theme-change": "^2.0.2",
     "typed-vuex": "^0.2.0",
     "vue": "^3.2.25",

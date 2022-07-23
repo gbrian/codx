@@ -5,6 +5,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/typography'),
     require('daisyui'),
-    require('tailwind-scrollbar')
+    require('tailwind-scrollbar'),
+    require('tailwind-scrollbar-hide')
   ],
 }
