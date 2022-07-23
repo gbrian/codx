@@ -11,6 +11,7 @@
     <div class="flex flex-col grow justify-start">
       <div :class="['mb-2', isCurrentCompany(company) ? 'drop-shadow-lg' : '']"
         v-for="(company, cix) in companies" :key="cix"
+        :title="company.name"
       >
         <div :class="['avatar cursor-pointer p-1 border',
           isCurrentCompany(company) ? 'border-pink-900' : '']"

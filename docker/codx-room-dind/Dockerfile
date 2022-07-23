@@ -12,9 +12,6 @@ RUN chmod +x /codx-entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-COPY codx-coder /codx-coder
 COPY docker-compose.yaml /docker-compose.yaml
-
-# USER 1001:1001
 
 ENTRYPOINT [ "/entrypoint.sh" ]

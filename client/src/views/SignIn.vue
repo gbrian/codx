@@ -7,7 +7,7 @@
     </h1>
     <h1
       class="md:pt-1 text-center px-3 md:px-0 md:text-xl text-lg font-medium">
-      <img src="logo.png" class="" width="80" style="margin:auto" />
+      <img src="/logo.png" class="" width="80" style="margin:auto" />
     </h1>
     <h3
       class="md:pt-1 text-center px-3 md:px-0 md:text-xl text-lg font-medium "

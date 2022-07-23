@@ -30,10 +30,6 @@ module.exports = {
     strapi.db.lifecycles.subscribe({
       models: ['plugin::users-permissions.user'],
       async beforeCreate(event) {
-        const { data } = event.params;
-        if (!data.avatar) {
-          data.avatar = `https://avatars.dicebear.com/api/adventurer/${data.username}.svg`
-        }
       },
       async afterCreate(event) {
         const { result: { id } } = event

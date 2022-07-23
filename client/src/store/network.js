@@ -18,7 +18,13 @@ export const getters = getterTree(state, {
     return online.reduce((acc, id) => [acc, (acc[id] = friends[id])][0], {})
   }
 })
-
+function getUserColor () {
+  let color = 0
+  while (color < 0x101010) { 
+    color  = (Math.random() * 0xFFFFFF << 0)
+  }
+  return "#" + color.toString(16);
+}
 export const mutations = mutationTree(state, {
   setNetwork (state, { friends = [] } = {}) {
     state.friends = friends.map(f => ({ ...f, isFriend: true }))
@@ -27,7 +33,12 @@ export const mutations = mutationTree(state, {
   },
   updateFriendStatus (state, friendStatus = []) {
     const { friends } = state
-    Object.values(friends).forEach(f => { f.online = false })
+    Object.values(friends).forEach(f => {
+      f.online = false;
+      if (!f.color) {
+        f.color = getUserColor()
+      }
+    })
     friendStatus.forEach(friend => {
       const existingFriend = friends[friend.id]
       if (existingFriend) {
@@ -40,6 +51,9 @@ export const mutations = mutationTree(state, {
   },
   updateAllUsers (state) {
     const { user } = $storex.user
+    if (!user.color) {
+      user.color = getUserColor()
+    }
     if (user) {
       state.allUsers = {
         [user.id]: {

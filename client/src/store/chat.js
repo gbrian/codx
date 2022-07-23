@@ -74,13 +74,11 @@ export const mutations = mutationTree(state, {
     }
   },
   async setOpenedChat (state, { id, visible } = {}) {
-    if (id) {
-      const { data: chat } = await api.loadChat(id)
-      $storex.chat.addChat({ ...chat, visible })
+    const chat = state.chats[id]
+    if (chat) {
+      chat.visible = visible
     }
-    if (state.chats) {
-      state.openedChat = state.chats[id]
-    }
+    state.openedChat = chat
   },
   async addMessage (state, { id, chat: { id: chatId }, from, content, createdAt, extra, edited }) {
     if (!state.chats[chatId]) {
@@ -98,14 +96,12 @@ export const mutations = mutationTree(state, {
     }
     $storex.chat.addChat({
       ...state.chats[chatId],
-      messages: JSON.parse(JSON.stringify(messages))
+      messages: [...messages]
     })
     if (chatId === state.openedChat?.id) {
-      if (!state.openedChat.visible) {
-        this.app.$notify({
-          text: $storex.chat.formatMessage(newMessage),
-          group: "success"
-        }, 2000);
+      if (state.openedChat.visible) {
+        const me = $storex.user.user
+        state.openedChat.readReceipt[me.id] = new Date()
       }
       state.openedChat = state.chats[chatId]
     }
@@ -123,6 +119,21 @@ export const mutations = mutationTree(state, {
     if (state.openedChat?.id === parseInt(id)) {
       $storex.chat.setOpenedChat()
     }
+  },
+  setChatVisible(state, { id, visible }) {
+    const me = $storex.user.user
+    const chat = state.chats[id]
+    state.chats = {
+      ...state.chats,
+      [id]: {
+        ...chat,
+        readReceipt: {
+          ...chat.readReceipt,
+          [me.id]: visible ? new Date() : chat.readReceipt[me.id]
+        },
+        visible
+      }
+    }
   }
 })
 
@@ -131,37 +142,43 @@ export const actions = actionTree(
   {
     init () {
     },
-    async newChat (ctx, chatSettings) {
+    async newChat (_, chatSettings) {
       const { data: chat } = await api.createChat(chatSettings)
       $storex.chat.addChat(chat)
       return chat
     },
-    async sendMessage (ctx, { chat, content, extra, id }) {
+    async sendMessage (_, { chat, content, extra, id }) {
       const { user: from } = $storex.user
       await api.sendMessage({ chat, content, from, extra, id })
     },
-    async addUser (ctx, chatAddUser) {
-      await api.chatAddUser(chatAddUser)
-      $storex.chat.setOpenedChat(chatAddUser.chat)
+    async addUser (_, { chat, user }) {
+      await api.chatAddUser({ chat, user })
+      await $storex.chat.refreshChat(chat)
     },
-    async removeUser ({ state: { openedChat = {} }}, { user, chat }) {
+    async removeUser (_, { user, chat }) {
       await api.removeUserFromChat({ user, chat })
-      $storex.chat.setOpenedChat(openedChat)
+      await $storex.chat.refreshChat(chat)
     },
-    async onEditMessage (ctx, { chat, message }) {
+    async onEditMessage (_, { chat, message }) {
       await api.sendMessage({ chat, ...message })
     },
-    async refreshChat (ctx, { id, isChannel = false }) {
+    async refreshChat (_, { id, isChannel = false }) {
       const { data: chat } = await api.loadChat(id)
       $storex.chat.addChat({ ...chat, isChannel })
       return chat
     },
-    formatMessage(ctx, newMessage) {
+    formatMessage(_, newMessage) {
       return newMessage.content
     },
-    async updateChat (ctx, { id, changes }) {
-      const chat = await api.updateChat(id, changes)
-      $storex.chat.addChat(chat)
+    async updateChat (_, { id, changes }) {
+      await api.updateChat(id, changes)
+      await $storex.chat.refreshChat({ id })
+    },
+    async openChat (_, { id, visible } = {}) {
+      if (id) {
+        await $storex.chat.refreshChat({ id })
+      }
+      $storex.chat.setOpenedChat({ id, visible })
     }
   },
 )

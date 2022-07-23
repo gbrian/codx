@@ -131,9 +131,9 @@ export default {
           credits: 200
         },
         {
-          title: "Neko",
-          image: "m1k1o/neko:firefox",
-          description: "Neko room. m1k1o/neko:firefox",
+          title: "Docker",
+          image: "codx/room:dind",
+          description: "Docker poswered room",
           tags: [''],
           media: [
             { type: 'image', url: '/logo.png' }

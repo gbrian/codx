@@ -62,9 +62,9 @@ const routes = [
     component: () => import("../views/Main.vue"),
   },
   {
-    path: "/profile/@:username",
-    name: "UserProfile",
-    component: () => import("../views/Main.vue"),
+    path: "/new-chat",
+    name: "NewChatDemo",
+    component: () => import("../views/NewChatDemo.vue"),
   }
 ];
 

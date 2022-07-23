@@ -72,6 +72,7 @@ export const mutations = mutationTree(state, {
       ...state.settings,
       keyboardLayout: getKeyboardSettings(neko)
     }
+    setTimeout(() => $storex.clinic.sendEmote({ clinicId: clinic.id, emote: 'wave' }), 2000)
   }
 })
 

@@ -77,28 +77,43 @@ module.exports = strapi => {
       })
       return users.map(this.filteredUser)
     },
-    async me (params) {
-      const { id } = params
-      const sme = await this.findUser(id)
-      const network = await this.network(sme)
-      const guestChats = await strapi.$query('chat').findMany({ 
-        filters: { guests: [sme.id] },
-        populate: { admins: true, guests: true, channel: { entries: true } }
-      })
-      const adminChats = await strapi.$query('chat').findMany({ 
-        filters: { admins: [sme.id] },
-        populate: { admins: true, guests: true, channel: { entries: true } }
-      })
-      const clinics = await strapi.codx.room.listRooms(sme)
-      const companies = await strapi.codx.company.companies(sme)
-      const subscriptions = await this.subscriptions(companies)
-      const ds = new Date().getTime()
-      const channels = await this.channels(sme)
+    async userChats (user, channels) {
       const channelChats = channels
                           .map(({ entries }) => entries
                               .map(({ chat_message: { chat: { id } } = { chat: {} } }) => id ))
                           .reduce((a, b) => a.concat(b), [])
+      const guestChats = await strapi.$query('chat').findMany({ 
+        filters: { guests: [user.id] },
+        populate: { admins: true, guests: true, channel: { entries: true } }
+      })
+      const adminChats = await strapi.$query('chat').findMany({ 
+        filters: { admins: [user.id] },
+        populate: { admins: true, guests: true, channel: { entries: true } }
+      })
       const chats = [...guestChats, ...adminChats].map(c => ({ ...c, isChannel: channelChats.indexOf(c.id) !== -1 }))
+      const messages = await strapi.$query('chat-message').findMany({ 
+        filters: { 
+          chat: chats.map(({ id }) => id)
+        },
+        populate: ['chat', 'from']
+      })
+      chats.forEach(c => {
+        const { id } = c
+        c.messages = messages
+          .filter(m => m.chat.id === id && m.extra === null)
+          .reverse().slice(0, 1)
+      })
+      return chats
+    },
+    async me (params) {
+      const { id } = params
+      const sme = await this.findUser(id)
+      const network = await this.network(sme)
+      const clinics = await strapi.codx.room.listRooms(sme)
+      const companies = await strapi.codx.company.companies(sme)
+      const subscriptions = await this.subscriptions(companies)
+      const channels = await this.channels(sme)
+      const chats = await this.userChats(sme, channels)
       const activity = await strapi.$query('user-activity').findMany({ 
         filters: { user: id }
       })

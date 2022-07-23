@@ -43,11 +43,6 @@ class Strapi {
     return useFetch.put("api/chats/" + id, changes, { headers })
   }
 
-  async removeUserFromChat ({ user: { id: userId }, chat: { id } }) {
-    const { headers } = this
-    return useFetch.delete(`api/chats/${id}?removeUser=${userId}`, { headers })
-  }
-
   async loadChat (id) {
     const { headers } = this
     return useFetch.get(`api/chats/${id}?populate=admins,guests&updateReadRecipe=1`, { headers })
@@ -63,6 +58,11 @@ class Strapi {
   async chatAddUser({ chat, user }) {
     const { headers } = this
     return useFetch.put("api/chats/" + chat.id, { guest: user }, { headers })
+  }
+
+  async removeUserFromChat ({ user: { id: userId }, chat: { id } }) {
+    const { headers } = this
+    return useFetch.delete(`api/chats/${id}?removeUser=${userId}`, { headers })
   }
 
   async createClinic ({ chat, settings }) {

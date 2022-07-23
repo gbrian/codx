@@ -7,7 +7,7 @@
   <div class="absolute z-10">
     <slot name="badges" />
   </div>
-  <div :class="[avatarClass]">
+  <div :class="['border border-neutral-focus', avatarClass]">
     <div :class="['indicator-item badge', muted ? 'badge-error text-black' : 'badge-secondary']" v-if="video">
       <MicrophoneIcon :class="['w-2', muted ? '' : 'animate-pulse']" />
     </div>
@@ -19,7 +19,7 @@
       v-if="video"
       class="rounded-md object-fill z-0"
     ></video>
-    <img :src="user.avatar" :width="size || 10" :height="size || 10" :class="online ? '' : 'grayscale'" v-else>
+    <img :src="avatarImage(user.username, size || 10)" :width="size || 10" :height="size || 10" :class="online ? '' : 'grayscale'" v-else>
   </div>
 </div> 
 </template>
@@ -65,6 +65,34 @@ export default {
       this.$emit('user-online', { user: this.user, isOnline: newVal })
       this.onlineChanged = true
       setTimeout(() => { this.onlineChanged = false }, 3000)
+    }
+  },
+  methods: {
+    avatarImage () {
+      const { online, username, color } = this.user
+      const letters = `${username[0]}${username[1]}`.toUpperCase()
+      const w = window
+      const d = w.document
+      var canvas = d.createElement('canvas');
+      var context = canvas.getContext("2d");
+      var size = 60;
+      // Set canvas with & height
+      canvas.width = size;
+      canvas.height = size;
+      // Select a font family to support different language characters
+      // like Arial
+      context.font = Math.round(canvas.width / 2) + "px Arial";
+      context.textAlign = "center";
+      // Setup background and front color
+      context.fillStyle = online ? color : 'transparent';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = online ? "#FFF": "gray";
+      context.fillText(letters, size / 2, size / 1.5);
+      // Set image representation in default format (png)
+      const dataURI = canvas.toDataURL();
+      // Dispose canvas element
+      canvas = null;
+      return dataURI;
     }
   }
 }

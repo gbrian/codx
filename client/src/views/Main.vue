@@ -55,7 +55,7 @@
     <div class="splittedView lg:flex flex-col w-full bg-base-200" v-if="splittedView">
       <Header
           class="bg-neutral"
-          :chat="$storex.chat.openedChat"
+          :chatId="$storex.chat.openedChat?.id"
           :explorerVisible="explorerVisible"
           :chatVisible="chatVisible"
           :videoVisible="videoCall && !videoHidden"
@@ -81,7 +81,7 @@
         </div>
         <div :class="['flex m-2',
             stackPanels ? 'flex-col-reverse' : 'flex-row',
-            currentClinic ? (chatVisible ? 'w-1/3' : 'w-1/6') : 'grow'
+            currentClinic ? (chatVisible ? 'w-1/4' : 'w-1/6') : 'grow'
           ]"
           v-if="stackPanelVisible"
         >
@@ -180,11 +180,11 @@ export default {
       const chat = Object.keys(chats).map(id => chats[id])
         .filter(c => c.chatName === chatName)[0]
       chat && this.onOpenChat(chat)
-    }
-    if (channel) {
+    } else if (channel) {
       this.onOpenChannel({ id: parseInt(channel) })
+    } else {
+      this.onAcademyCourses()
     }
-    this.onAcademyCourses()
   },
   computed: {
     openChat () {
@@ -255,7 +255,7 @@ export default {
       this.showHelp = false
       this.leaveClinic ()
       if (!keepChat) {
-        await this.$storex.chat.setOpenedChat()
+        await this.$storex.chat.openChat()
       }
       await this.$storex.channel.setCurrentChannel()
       this.showCodingClinics = false
@@ -274,7 +274,7 @@ export default {
         return
       }
       await this.resetView()
-      await this.$storex.chat.setOpenedChat({ id: chat.id, visible: true })
+      await this.$storex.chat.openChat({ id: chat.id, visible: true })
       if (chat.openClinic && chat.clinic) {
         this.joinClinic(chat.clinic)
       }
@@ -362,12 +362,13 @@ export default {
         const { currentClinic } = this.$storex.clinic
         if (currentClinic) {
           const chat = await this.$storex.chat.newChat({ clinicId: currentClinic.id })
-          this.$storex.chat.setOpenedChat({ ...chat, visible: true })
+          this.$storex.chat.openChat({ ...chat, visible: true })
         }
       }
       this.chatHidden = !this.chatHidden
       if (this.$storex.chat.openedChat) {
-        this.$storex.chat.openedChat.visible = !this.chatHidden
+         const { id } = this.$storex.chat.openedChat
+        this.$storex.chat.setChatVisible({ id, visible: !this.chatHidden })
       }
     },
     toggleVideoHidden () {
@@ -393,7 +394,7 @@ export default {
       this.$storex.company.setCurrentCompany(company)
       if (this.taskManager && this.taskManager !== company) {
         this.taskManager = null
-        this.$storex.chat.setOpenedChat()
+        this.$storex.chat.openChat()
         this.clinicList = true
       }
     },
@@ -402,7 +403,7 @@ export default {
       this.showHeader = false
       this.showCodingClinics = false
       this.$storex.clinic.setCurrentClinic()
-      this.$storex.chat.setOpenedChat()
+      this.$storex.chat.openChat()
       this.taskManager = this.currentCompnay
     },
     removeUser (user) {

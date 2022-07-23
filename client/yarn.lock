@@ -1102,6 +1102,13 @@ lamejs@1.2.0:
   dependencies:
     use-strict "1.0.1"
 
+lamejs@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/lamejs/-/lamejs-1.2.1.tgz#0f92d38729213f106d4a19ded20821da7e89c8e4"
+  integrity sha512-s7bxvjvYthw6oPLCm5pFxvA84wUROODB8jEO2+CE1adhKgrIvVOlmMgY8zyugxGrvRaDHNJanOiS21/emty6dQ==
+  dependencies:
+    use-strict "1.0.1"
+
 lilconfig@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.4.tgz#f4507d043d7058b380b6a8f5cb7bcd4b34cee082"

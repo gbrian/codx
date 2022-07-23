@@ -20,6 +20,7 @@
     "axios": "^0.25.0",
     "daisyui": "^1.25.4",
     "dayspan-vuetify": "^0.4.0",
+    "lamejs": "^1.2.1",
     "marked": "^4.0.12",
     "moment": "^2.29.1",
     "mount-vue-component": "^0.10.1",

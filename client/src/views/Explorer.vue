@@ -95,7 +95,7 @@
             </h4>
             <div class="-space-x-1 ml-2">
               <UserAvatar v-for="(user, uix) in chat.users" :key="uix"
-                :class="[user.openedChat === chat.id && user.online && !user.isMe ? '' : 'hidden']"
+                :class="['pt-1', user.openedChat === chat.id ? '' : 'hidden']"
                 :size="4"
                 :user="user"
               />

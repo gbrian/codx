@@ -22,7 +22,9 @@ export const mutations = mutationTree(state, {
     }
   },
   async setCurrentChannel (state, channel) {
-    state.currentChannel = state.channels.filter(c => c.id === channel?.id)[0]
+    if (state.channels) {
+      state.currentChannel = state.channels.filter(c => c.id === channel?.id)[0]
+    }
   },
   async updateChannel ({ channels }, id) {
     if (!id) {

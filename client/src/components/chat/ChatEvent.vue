@@ -1,6 +1,6 @@
 <template>
   <div class="alert alert-warning flex flex-row justify-between mx-auto">
-    <Avatar :url="message.from.avatar" />
+    <Avatar :url="message.from.avatar" v-if="false"/>
     <div class="mx-3 grow">
       <label>{{ content }}</label>
     </div>

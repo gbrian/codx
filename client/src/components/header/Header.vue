@@ -46,10 +46,13 @@
       </div>
       <div class="flex space-x-2 p-2 border rounded-md" v-if="clinic">
         <div
-          :class="['avatar', chatVisible ? 'btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost']"
+          :class="['avatar', 
+            chatVisible ? 'btn btn-sm btn-accent rounded-md' : 'btn btn-sm btn-ghost',
+             chat?.unreadMessages?.length ? 'online' : ''
+          ]"
           @click="$emit('toggle-chat')"
         >
-          <ChatAltIcon class="hidden md:block cursor-pointer w-5 "/>
+          <ChatAltIcon :class="['hidden md:block cursor-pointer w-5'] "/>
         </div>
       </div>
       <div class="flex space-x-2 p-2 border rounded-md">
@@ -137,13 +140,16 @@ export default {
     Logo,
     ClinicControls
   },
-  props: ['chat', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinicId', 'isFullscreen'],
+  props: ['chatId', 'explorerVisible', 'chatVisible', 'videoVisible', 'clinicId', 'isFullscreen'],
   data () {
     return {
       newCodingClinic: false
     }
   },
   computed: {
+    chat () {
+      return this.$storex.chat.chats[this.chatId]
+    },
     clinic () {
       return this.$storex.clinic.allClinics[this.clinicId]
     },
@@ -220,11 +226,11 @@ export default {
         }
       })
     },
-    userOnClinic ({ clinic }) {
-      return !!clinic
+    userOnClinic ({ online, clinic }) {
+      return online && clinic?.id === this.clinicId
     },
-    userHostingClinic ({ clinic }) {
-      return clinic && clinic.hosting
+    userHostingClinic ({ online, clinic }) {
+      return this.userOnClinic({ online, clinic }) && clinic?.hosting
     },
     toggleClinic () {
       if (this.clinic)  {

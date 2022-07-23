@@ -8,6 +8,7 @@
           v-for="(id, iix) in ids" :key="iix"
           :class="['emote', id]"
           @click.prevent.stop="send(id)"
+          :title="id"
         ></a>
       </li>
     </ul>
@@ -26,7 +27,7 @@ export default {
   data () {
     return {
       emoteFilter: null,
-      lastShown: 'okay'
+      lastShown: 'wave'
     }
   },
   computed: {
@@ -83,7 +84,7 @@ export default {
         'hot',
         'cold',
         'blush',
-        'sad',
+        'sad'
       ]
       return [...chunks(ids, 4)]
     }
