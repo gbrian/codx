@@ -26,8 +26,9 @@
         <i class="fa-solid fa-laptop-code shadow-md"></i>
         Run
       </button>
-      <div class="bg-base-300 rounded-lg relative">
-          <img :src="media.url" class="h-full w-full rounded-lg" v-if="media.type === 'image'" />
+      <div class="relative bg-base-300 rounded-lg">
+          <img :src="media.url" class="h-46 rounded-lg" v-if="media.type === 'image'" />
+          <YoutubeVideoMedia :src="media.url" :title="media.name" v-if="media.type === 'youtube'" />
           <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2" @click="next" v-if="mediaVisible < (result.media.length-1)" >&gt;</label>
           <label for="my-modal-3" class="btn btn-sm btn-circle absolute left-2 top-2" @click="prev" v-if="mediaVisible" >&lt;</label>
       </div>
@@ -61,7 +62,11 @@
   </div>
 </template>
 <script>
+import YoutubeVideoMedia from '@/components/YoutubeVideoMedia.vue'
 export default {
+  components: {
+    YoutubeVideoMedia,
+  },
   props: ['result'],
   data () {
     return {

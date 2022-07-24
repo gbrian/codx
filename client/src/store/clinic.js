@@ -102,11 +102,6 @@ export const actions = actionTree(
     async disconnect({ state: { rooms } }, id) {
       nekoClient.disconnect()
     },
-    requestControl ({ state: { rooms } }, id = "main") {
-      if (!neko.remote.hosting) {
-        neko.remote.request()
-      }
-    },
     async deleteClinic ({ state: { clinics, currentClinic } }, clinic) {
       const { id } = clinic
       await api.deleteClinic(clinic)
@@ -119,18 +114,18 @@ export const actions = actionTree(
       const { id } = $storex.user.user
       console.log("clinic", { user: { id }, position })
     },
-    requestControl({ state: { currentClinic, settings }}) {
+    requestControl(_, clinic) {
       const { id } = $storex.user.user
-      $storex.clinic.setRequestControl({ clinic: currentClinic, requestingControl: true })
+      $storex.clinic.setRequestControl({ clinic, requestingControl: true })
       $storex.session.emit({
         event: 'clinic-request-control',
-        data: { user: { id }, clinic: { id: currentClinic.id } },
+        data: { user: { id }, clinic: { id: clinic.id } },
         cb: () => {
-          $storex.clinic.setUserHasControl({ clinic: currentClinic, hasControl: true })
-          $storex.clinic.setRequestControl({ clinic: currentClinic, requestingControl: false })
+          $storex.clinic.setUserHasControl({ clinic, hasControl: true })
+          $storex.clinic.setRequestControl({ clinic, requestingControl: false })
           // Scroll smooth
-          // currentClinic.neko.settings.setScroll(settings.scroll)
-          // currentClinic.neko.settings.setKeyboardLayout(settings.keyboardLayout)
+          currentClinic.neko.settings.setScroll(settings.scroll)
+          currentClinic.neko.settings.setKeyboardLayout(settings.keyboardLayout)
         }
       })
     },

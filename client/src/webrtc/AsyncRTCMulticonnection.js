@@ -1,4 +1,4 @@
-import RTCMulticonnection from 'rtcmulticonnection'
+import RTCMulticonnection from './rtcmulticonnnection'
 
 export default settings => {
   const connection = new RTCMulticonnection(settings)

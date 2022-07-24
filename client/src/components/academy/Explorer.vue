@@ -2,7 +2,7 @@
   <div class="explorer flex flex-col gap-6">
     <Logo :class="['w-12 cursor-pointer avatar cursor-pointer p-1 mb-4']" />
     <Profile />
-    <Navigator />
+    <Navigator :mode="mode" @mode-change="newMode => $emit('mode-change', newMode)"/>
     <Chats class="grow" />
     <ThemeSelector />
   </div>
@@ -20,6 +20,7 @@ export default {
     Navigator,
     Chats,
     ThemeSelector
-  }
+  },
+  props: ['mode']
 }
 </script>

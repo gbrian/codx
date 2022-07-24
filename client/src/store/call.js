@@ -37,11 +37,11 @@ export const actions = actionTree(
   {
     init () {
     },
-    async createNewCall ({ state }, { roomId, type = "audio" }) {
+    async createNewCall ({ state }, { roomId, type = "audio", videoId, audioId }) {
       const { user } = $storex.user
       const rtc = await WebRTCRoom.newRoom({
-        video: type === "video",
-        audio: true,
+        video: type === "video" ? videoId || true : null,
+        audio: audioId || true,
         userid: user.id,
         roomId,
         webrtc: $storex.company.webrtcSettings || user.webrtc,
@@ -49,17 +49,23 @@ export const actions = actionTree(
           $storex.call.updateCallFromRtc(ev)
         }
       })
-      $storex.call.setCalls({
-        ...state.calls,
-        [rtc.roomId]: {
-          id: rtc.roomId,
-          type,
-          callee: user,
-          rtc,
-          streams: rtc.streams
-        }
-      })
-      $storex.call.setCurrentCall(rtc.roomId)
+      return new Promise(ok => {
+        DetectRTC.load(() => {
+          $storex.call.setCalls({
+            ...state.calls,
+            [rtc.roomId]: {
+              id: rtc.roomId,
+              type,
+              callee: user,
+              rtc,
+              streams: rtc.streams,
+              DetectRTC: rtc.connection.DetectRTC
+            }
+          })
+          $storex.call.setCurrentCall(rtc.roomId)
+          ok($storex.call.currentCall)
+        })
+      }) 
     },
     async joinCall (ctx, { type, roomId }) {
       await $storex.call.createNewCall({ type, roomId })
@@ -67,6 +73,12 @@ export const actions = actionTree(
     async endCurrentCall ({ state }) {
       await state.currentCall.rtc.disconnect()
       $storex.call.setCurrentCall()
+    },
+    async endCall ({ state }, call) {
+      await call.rtc.disconnect()
+      if (call.id === state.currentCall.id) {
+        $storex.call.setCurrentCall()
+      }
     },
     toggleVideo (ctx, call) {
       call.rtc.toggleVideo()

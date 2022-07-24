@@ -45,14 +45,14 @@ export default {
       return this.$storex.clinic.allClinics[this.roomId]
     },
     url () {
-      const { url, nekoPassword } = this.room
+      const { roomUrl, nekoPassword } = this.room
       const { user: { username } } = this.$storex.user
-      return `${url}/?pwd=${nekoPassword}&displayName=${username}`
+      return `${roomUrl}/?pwd=${nekoPassword}&displayName=${username}`
     },
     testUrl () {
-      const { url, nekoPassword } = this.room
+      const { roomUrl, nekoPassword } = this.room
       const { user: { username } } = this.$storex.user
-      return `${url}/emoji.json?pwd=${nekoPassword}&displayName=${username}`
+      return `${roomUrl}/emoji.json?pwd=${nekoPassword}&displayName=${username}`
     },
     document () {
       const { nekoFrame: { contentWindow: { document } } } = this.$refs
@@ -133,9 +133,7 @@ export default {
           }
         </style>`
       this.document.head.insertAdjacentHTML("beforeend", style)
-      this.overlay.addEventListener('click', ev => {
-        this.$storex.clinic.requestControl()
-      })
+
       this.overlay.addEventListener('mousemove', this.setUserCursor.bind(this))
       this.overlay.addEventListener('mouseleave', this.removeUserCursor.bind(this))
       this.room.neko = this.neko
@@ -164,7 +162,7 @@ export default {
     },
     onUserLayerClick (e) {
       const { clinic } = this.$storex
-      clinic.requestControl()
+      clinic.requestControl(this.room)
     },
     setHasControl (newVal) {
       this.overlay.style.display = newVal ? "" : "none"

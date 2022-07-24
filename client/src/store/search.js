@@ -72,8 +72,7 @@ export const actions = actionTree(
           caption: 'https://www.ptbocanada.com/journal/2017/5/2/girl-power-national-girls-learning-code-day-comes-to-peterborough'
         },
         showWelcome: true,
-        tags: results.map(r => r.tags.split(" "))
-              .reduce((a, b) => a.concat(b), [])
+        tags: results.reduce((a, b) => a.concat(b||[]), [])
               .filter((v, ix, arr) => arr.indexOf(v) === ix),
         results: [...currentSearch.results, ...results]
       })

@@ -52,17 +52,13 @@ export default class WebRTCRoom {
     }
     connection.session = {
         audio,
-        video: video ? {
-            width: {
-                ideal: 1280
-            },
-            height: {
-                ideal: 720
-            },
-            frameRate: 30
-        } : null,
+        video: video === true ? true : video ? { deviceId: video } : null,
         screen,
         data: true
+    }
+    connection.mediaConstraints = {
+      audio: audio === true ? true : audio ? { deviceId: audio } : null, 
+      video: video === true ? true : video ? { deviceId: video } : null
     }
     this.setCodecs({ connection })
     connection.extra = this.encodeExtra(settings)

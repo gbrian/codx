@@ -1,23 +1,25 @@
 <template>
-  <div class="card card-compact w-96 h-96 bg-base-200 shadow-xl cursor-pointer pb-4">
+  <div class="card card-compact w-96 h-96 bg-base-200 shadow-md cursor-pointer pb-4">
     <figure class="relative text-white h-48">
       <img class="h-full" :src="result.image" :title="result.name" />
       <div class="absolute top-0 bottom-0 left-0 right-0 bg-black opacity-40"></div>
       <div class="absolute top-2 right-4 prose text-right">
-        <div class="badge badge-secondary">
+        <div class="badge badge-secondary" v-if="result.credits">
           {{ result.credits }}
           <i class="ml-2 fa-solid fa-circle-dollar-to-slot"></i>
         </div>
       </div>
-      <div class="absolute bottom-0 left-4 prose">
+      <div class="absolute top-2 left-2 right-2 p-4 prose">
+        <h3 class="text-primary">{{ result.name }}</h3>
         <h3>{{ result.description }}</h3>
         <div class="badge badge-xs mr-1"
           v-for="(tag, tix) in result.tags" :key="tix">
           {{ tag }}
         </div>
       </div>
-      <div class="absolute -bottom-6 card-actions justify-end -mt-10 z-100" v-if="false">
-        <button class="btn btn-sm btn-accent ">Run...</button>
+      <div class="absolute -bottom-6 card-actions justify-end -mt-10 z-100" v-if="result.roomUrl">
+        <button class="btn btn-sm btn-accent shadow-md" @click.prevent="$emit('open')">Open</button>
+        <button class="btn btn-sm btn-error shadow-md" @click.prevent="$emit('delete')">Delete</button>
       </div>
     </figure>
     <div class="stats stats-vertical md:stats-horizontal grow">

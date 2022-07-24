@@ -71,6 +71,12 @@ const routes = [
     name: "Academy",
     component: () => import("../views/Academy.vue"),
   }
+  ,
+  {
+    path: "/academy/:roomName",
+    name: "AcademyCourse",
+    component: () => import("../views/AcademyCourse.vue"),
+  }
 ];
 
 const router = createRouter({
